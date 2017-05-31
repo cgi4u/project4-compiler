@@ -59,7 +59,7 @@ typedef enum {StmtK,ExpK,DclK,PrmtK,TypeK} NodeKind;
 typedef enum {CompK,SelK,IterK,RetK} StmtKind;
 typedef enum {AssignK,OpK,ConstK,IdK,ArrIdK,CallK} ExpKind;
 typedef enum {FuncK,VarK,ArrK} DclKind;
-typedef enum {IntK,IntArrK,VoidK} PrmtKind;
+typedef enum {IntK,VoidK,IntArrK} PrmtKind;
 
 //Used for type checking
 typedef enum {Void, Integer} ExpType; 

@@ -7,7 +7,7 @@
 void initSymbolTable(void);
 
 /*	Inserts symbol and its properties to symbol table	*/
-int st_insert(char * name, int lineno, int scope, int loc, NodeKind kind, int subKind, int arrSize, TokenType type);
+int st_insert(char * name, int lineno, int loc, NodeKind kind, int subKind, int arrSize, ExpType type);
 
 /*	Find the symbol which has the certain name	*/
 int st_lookup(char * name);
