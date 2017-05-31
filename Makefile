@@ -1,6 +1,6 @@
 CC = gcc
 TARGET = 20121653
-OBJECTS = main.o util.o lex.yy.o cm.tab.o
+OBJECTS = main.o util.o symtab.o lex.yy.o cm.tab.o
 
 all = $(TARGET)
 

@@ -61,6 +61,9 @@ typedef enum {AssignK,OpK,ConstK,IdK,ArrIdK,CallK} ExpKind;
 typedef enum {FuncK,VarK,ArrK} DclKind;
 typedef enum {IntK,IntArrK,VoidK} PrmtKind;
 
+//Used for type checking
+typedef enum {Void, Integer} ExpType; 
+
 #define MAXCHILDREN 3
 
 typedef struct treeNode{ 
@@ -79,6 +82,7 @@ typedef struct treeNode{
              	char * name;
              	arrayProp arrProp;
      	} attr;
+	ExpType type;
 } TreeNode;
 
 #endif
