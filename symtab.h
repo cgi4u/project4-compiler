@@ -3,8 +3,11 @@
 
 #include "globals.h"
 
+/*	Initialze symbol table list	*/
+void initSymbolTable(void);
+
 /*	Inserts symbol and its properties to symbol table	*/
-void st_insert(char * name, int lineno, int scope, int loc, NodeKind kind, int subKind, int arrSize, TokenType type);
+int st_insert(char * name, int lineno, int scope, int loc, NodeKind kind, int subKind, int arrSize, TokenType type);
 
 /*	Find the symbol which has the certain name	*/
 int st_lookup(char * name);
