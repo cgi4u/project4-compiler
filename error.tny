@@ -1,0 +1,16 @@
+int main(void){
+
+int c;
+void y;
+
+while (c){ 
+	int inside;
+	c = c - inside;
+
+
+}
+
+int nofunc(void){
+	return 1;
+}
+

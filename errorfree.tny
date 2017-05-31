@@ -1,0 +1,28 @@
+int fun(int f){
+	a(1, b(c(d(15)), 7), d(z[8]), 15);
+}
+
+
+int main(int c, int d[]){
+		void s;
+	int i;
+	int e[10];
+
+	e[5] = 5 + i * add(i+j);
+	
+	if ( 1 )
+		e[4] > i + dl;
+	else {
+		fun(aaa);
+		{
+			int x;
+			x = 1;
+			if ( fun(x) ) return;
+			else a * b + c * e[7] + fun(e[1]);
+		}
+	}
+
+	return 0;
+}
+
+int dl;
