@@ -27,6 +27,7 @@ void initSymbolTable(void){
 	hashTableList->outer = NULL;
 	hashTableList->scope = 0;
 	hashTableList->location = 0;
+	hashTableList->visited = 0;
 	curHashTable = hashTableList;
 }
 
@@ -41,6 +42,7 @@ void intoNewScope(void){
 
 	temp->scope = curHashTable->scope + 1;
 	temp->location = 0;
+	temp->visited = 0;
 	
 	if (hashTableList == curHashTable)
 		hashTableList = temp;
@@ -50,6 +52,33 @@ void intoNewScope(void){
 //      Go out the scope
 void closeScope(void){
 	curHashTable = curHashTable->outer;
+}
+
+//      Go into inner scope. Used in phase 2(checking)
+void inScope(void){
+	HashTableList temp = curHashTable->inner;
+
+	while (temp->inner){	
+		if (temp->inner->scope > curHashTable->scope)
+        		temp = temp->inner;
+		else break;
+	}
+	while (temp != curHashTable){
+		if ((temp->scope == curHashTable->scope + 1) && (temp->visited == 0))
+			break;
+		temp = temp->outer;
+	}
+
+	curHashTable = temp;
+	curHashTable->visited = 1;
+}
+
+void outScope(void){
+	HashTableList temp = curHashTable->outer;
+	while (temp->scope >= curHashTable->scope){
+		temp = temp->outer;
+	}
+	curHashTable = temp;
 }
 
 void insertAllPrmt(BucketList prmtList){

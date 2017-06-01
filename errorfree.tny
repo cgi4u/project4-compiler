@@ -1,36 +1,60 @@
 int fun(int f){
 	int x;
-	return fun(fun(fun(fun(x))));
+	return fun(fun(fun(fun(x*f))));
+}
+
+int v;
+
+void voidfunc(void){
+	int dum;
+	{
+		int e[10];
+                int i; 
+		if ( fun(v)*dum/v )
+			v = 2 > 1;
+		else{
+			int j;
+			j = fun(j);
+			return;	
+		}
+		i = 0;
+		while (i < 10)
+			v = v + e[i];
+	}
+	return;
 }
 
 
-int main(int c, int d[]){
+void main(void){
 	int i;
 	int j;
 	int e[10];
 
 	e[5] = 5 + i * fun(i+j);
 	
-	if ( 1 )
-		e[4] > i + j;
+	if ( 1 ){
+		int d;
+		d > i + j;
+	}
 	else {
 		int k;
-		fun(aaa);
 		{
 			int i;
 			i = 1;
-			if ( fun(i) ) return i;
+			if ( fun(i) ) return;
 			else j * i + e[7] + fun(e[i]);
 		}
 	}
 
-	while ( e[1] + e[2] ){
+	while ( e[fun(e[10]*7-i)+v] + e[2] ){
 		int i;
 		fun(j);
 		fun(i);
 	}
 
-	return 0;
+	voidfunc();	
+
+	return;
 }
 
 int dl;

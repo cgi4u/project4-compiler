@@ -63,7 +63,7 @@ typedef enum {FuncK,VarK,ArrK} DclKind;
 typedef enum {IntK,VoidK,IntArrK} PrmtKind;
 
 //Used for type checking
-typedef enum {Void, Integer} ExpType; 
+typedef enum {Void, Integer, Array} ExpType; 
 
 #define MAXCHILDREN 3
 

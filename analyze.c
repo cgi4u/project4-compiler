@@ -2,9 +2,6 @@
 #include "symtab.h"
 #include "analyze.h"
 
-//static int location = 0;
-//static int locBefore;
-
 static BucketList prmtQueueStart = NULL;
 static BucketList prmtQueueEnd = NULL;
 
@@ -65,7 +62,9 @@ static void insertPrmtQueue(char *name, int lineno, PrmtKind pkind){
 
 static int insertNode(TreeNode *t){
 	BucketList found;
-		BucketList searchedPar = prmtQueueStart; //Only used for parameter case
+	BucketList searchedPar = prmtQueueStart; //Only used for parameter case
+	
+	static int mainFlag = 0;
 
 	switch (t->nodekind){
 	case DclK:
@@ -77,9 +76,19 @@ static int insertNode(TreeNode *t){
 					fprintf(listing, "\t\t\tfirst declared at line %d\n", found->lines->lineno);
 					return -1;
 				}
+
+				if (mainFlag){
+					BucketList mainBucket = st_lookup("main", 0);
+                                        fprintf(listing, "ERROR in line %d : main should be the last function\n", mainBucket->lines->lineno);
+                                        return -1;
+                                }
+					
+				if (strcmp(t->attr.name, "main") == 0)
+					mainFlag = 1;
+
 				st_insert(t->attr.name, t->lineno, DclK, FuncK, 0, t->child[0]->attr.type, NULL);
 				break;
-			case VarK:
+			case VarK: 
 				found = st_lookup(t->attr.name, 1);
                                 if ( found ){
                                         fprintf(listing, "ERROR in line %d : declaration of a duplicated\n", t->lineno);
@@ -87,7 +96,7 @@ static int insertNode(TreeNode *t){
                                         return -1;
                                 }
                                 st_insert(t->attr.name, t->lineno, DclK, VarK, 0, t->child[0]->attr.type, NULL);
-                                break;
+				break;
 			case ArrK:
 				found = st_lookup(t->attr.arrProp.name, 1);
                                 if ( found ){
@@ -141,7 +150,7 @@ static int insertNode(TreeNode *t){
 	return 0;
 }
 
-void buildSymtabNode(TreeNode *t){
+int buildSymtabNode(TreeNode *t){
 	int compFlag = 0;
 
         if (t != NULL){
@@ -156,25 +165,217 @@ void buildSymtabNode(TreeNode *t){
                 }
 
                 if (insertNode(t) == -1){
-			Error = -1;
-			return;
+			Error = TRUE;
+			return -1;
 		}
                 {
                         int i;
-                        for (i = 0; i < MAXCHILDREN; i++)
-                                buildSymtabNode(t->child[i]);
+                        for (i = 0; i < MAXCHILDREN; i++){
+                                if (buildSymtabNode(t->child[i]) == -1)
+                        		return -1;
+			}
                 }
-                buildSymtabNode(t->sibling);
+                if (buildSymtabNode(t->sibling) == -1)
+			return -1;
 
                 if (compFlag){
                         closeScope();
                 }
         }
+
+	return 0;
 }
 
 void buildSymtab(TreeNode *syntaxTree){
 	initSymbolTable();
-	buildSymtabNode(syntaxTree);
+	if (buildSymtabNode(syntaxTree) == -1)
+		return;
 	fprintf(listing, "\nSymbol table:\n");
 	printSymTab(listing);
+}
+
+static TreeNode *root;
+static ExpType curFuncRetType;
+
+int checkNode(TreeNode *t){
+	BucketList found;	
+
+	switch (t->nodekind){
+	case StmtK:
+		switch (t->kind.stmt){
+		case SelK:  
+		case IterK: 
+			if (t->child[0]->type != Integer){
+				fprintf(listing, "ERROR in line %d : condition must be integer type\n", t->child[0]->lineno);               
+                                return -1;	
+			}
+			break;
+		case RetK: 
+			if (t->child[0]){
+				if (curFuncRetType != t->child[0]->type){
+                                	fprintf(listing, "ERROR in line %d : wrong return type\n", t->child[0]->lineno);
+                                	return -1;
+                        	}
+			}
+			else{
+				if (curFuncRetType != Void){                                        
+					fprintf(listing, "ERROR in line %d : there should be a return value\n", t->lineno);
+                                        return -1;
+                                }
+			}
+		default: break;
+		}
+		break;
+	case ExpK:
+		switch (t->kind.exp){
+		case AssignK:
+		case OpK:
+			if ((t->child[0]->type != Integer) || (t->child[1]->type != Integer)){
+				fprintf(listing, "ERROR in line %d : invalid operand\n", t->lineno);                   
+                                return -1;
+			} 
+			t->type = Integer;
+			break;
+		case ConstK:
+			t->type = Integer;
+                        break;
+		case IdK:
+			found = st_lookup(t->attr.name, 0);
+			if (found->subKind == 2)
+				t->type = Array;
+			else
+				t->type = Integer;
+                        break;
+		case ArrIdK:	
+			found = st_lookup(t->attr.name, 0);
+			if (found->subKind != 2){
+				fprintf(listing, "ERROR in line %d : array name is required in array expression\n", t->lineno);
+                                return -1;
+			}
+			if (t->child[0]->type != Integer){
+				fprintf(listing, "ERROR in line %d : array index must be an integer\n", t->lineno);
+                                return -1;
+			}
+			t->type = Integer;
+			break;
+		case CallK:
+			found = st_lookup(t->attr.name, 0);
+			if ((found->kind != DclK) || (found->subKind != FuncK)){
+                                fprintf(listing, "ERROR in line %d : function name is required in function call\n", t->lineno);
+                                return -1;
+                        }
+
+			{
+				TreeNode *par = root, *arg = t->child[0];
+				while (strcmp(par->attr.name, t->attr.name) != 0){
+					par = par->sibling;
+				}
+				par = par->child[1];
+					
+				if (!((par->kind.prmt == VoidK) && !arg)){
+					while ( par || arg ){
+						if (!(par && arg && (par->type == arg->type))){
+                                			fprintf(listing, "ERROR in line %d : argment type error\n", t->lineno);
+                                			return -1;
+                        			}
+						par = par->sibling;
+						arg = arg->sibling;
+					}
+				}
+			}
+
+			if (found->type == INT)
+				t->type = Integer;
+			else
+				t->type = Void;
+		default: break;
+		}
+		break;
+	case DclK:
+		switch (t->kind.dcl){
+		case VarK: 
+		case ArrK:
+			if (t->child[0]->attr.type == VOID){
+				fprintf(listing, "ERROR in line %d : variable cannot have void type\n", t->lineno);	
+				return -1;
+			}
+			break;
+		case FuncK:
+			if (strcmp(t->attr.name, "main") == 0){
+				if (t->child[0]->attr.type != VOID){
+					fprintf(listing, "ERROR in line %d : main fuction should return void\n", t->lineno); 
+                                        return -1;
+				}
+				if (t->child[1]->kind.prmt != VoidK){
+					fprintf(listing, "ERROR in line %d : main must not have a parameter\n", t->lineno);
+                                        return -1;
+				}
+			}
+		default: break;
+		}
+		break;
+	case PrmtK:
+		switch (t->kind.prmt){
+		case IntK:
+			if (t->child[0]->attr.type == VOID){
+				fprintf(listing, "ERROR in line %d : parameter cannot have void type\n", t->lineno);
+				return -1;
+			}
+			t->type = Integer;
+			break;
+		case IntArrK:
+			if (t->child[0]->attr.type == VOID){                                
+				fprintf(listing, "ERROR in line %d : parameter cannot have void type\n", t->lineno);
+                                return -1;
+                        }
+			t->type = Array;
+			break;
+		default: break;
+		}
+	default: break;
+	}
+	
+	return 0;
+}
+
+int checkTree(TreeNode *t){
+	int compFlag = 0;	
+
+        if (t != NULL){
+		if ((t->nodekind == StmtK) && (t->kind.stmt == CompK)){
+			compFlag = 1;
+                        inScope();
+                }
+
+		if ((t->nodekind == DclK) && (t->kind.dcl == FuncK)){ 
+			if (t->child[0]->attr.type == VOID)
+                                curFuncRetType = Void;
+                        else
+                                curFuncRetType = Integer;
+		}
+
+                {
+                        int i;
+                        for (i = 0; i < MAXCHILDREN; i++){
+                                if (checkTree(t->child[i]) == -1)
+                                        return -1;
+                        }
+                }
+		if (checkNode(t) == -1){
+                        Error = TRUE;
+                        return -1;
+                }
+                if (checkTree(t->sibling) == -1)
+                        return -1;
+
+		if (compFlag){
+                        outScope();
+                }
+        }
+	return 0;
+}
+
+void typeCheck(TreeNode *syntaxTree){
+	root = syntaxTree;
+	checkTree(syntaxTree);
 }

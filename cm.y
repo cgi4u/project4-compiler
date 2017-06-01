@@ -120,13 +120,11 @@ param		: type_spc ID
 			{ $$ = newPrmtNode(IntK);
                           $$->child[0] = $1;
                           $$->attr.name = copyString(oldTokenString);
-			  $$->lineno = lineno;
                         }
 		| type_spc ID { savedName = copyString(oldTokenString); } LSQBRKT RSQBRKT
 			{ $$ = newPrmtNode(IntArrK);
                           $$->child[0] = $1;
                           $$->attr.name = savedName;
-			  $$->lineno = lineno;
                         }
 		;
 comp_stmt	: LBRACE local_dcls stmt_list RBRACE
@@ -186,7 +184,10 @@ iter_stmt	: WHILE LPAREN exp RPAREN stmt
                           $$->child[1] = $5;
 			}
 		;
-ret_stmt	: RETURN SEMICOLON { $$ = newStmtNode(RetK); }
+ret_stmt	: RETURN SEMICOLON 
+			{ $$ = newStmtNode(RetK); 
+			  $$->child[0] = NULL;
+			}
 		| RETURN exp SEMICOLON
 			{ $$ = newStmtNode(RetK); 
 			  $$->child[0] = $2;
@@ -196,21 +197,18 @@ exp		: var ASSIGN exp
 			{ $$ = newExpNode(AssignK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
-			  $$->lineno = lineno;
                         }
 		| simple_exp { $$ = $1; }
 		;
 var		: ID 
 			{ $$ = newExpNode(IdK);
 			  $$->attr.name = copyString(oldTokenString);
-			  $$->lineno = lineno;
                         }
 		| ID { pushNNode(copyString(oldTokenString)); } 
 		  LSQBRKT exp RSQBRKT
 			{ $$ = newExpNode(ArrIdK);
                           $$->attr.name = popNNode();
 			  $$->child[0] = $4;
-			  $$->lineno = lineno;
                         }
 		;
 simple_exp	: add_exp EQ add_exp
@@ -218,42 +216,36 @@ simple_exp	: add_exp EQ add_exp
                           $$->child[0] = $1;
 			  $$->child[1] = $3;
 			  $$->attr.op = EQ;
-			  $$->lineno = lineno;
                         }
 		| add_exp NE add_exp
                         { $$ = newExpNode(OpK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = NE;
-			  $$->lineno = lineno;
                         }
 		| add_exp LE add_exp
                         { $$ = newExpNode(OpK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = LE;
-			  $$->lineno = lineno;
                         }
 		| add_exp LT add_exp
                         { $$ = newExpNode(OpK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = LT;
-			  $$->lineno = lineno;
                         }
 		| add_exp GE add_exp
                         { $$ = newExpNode(OpK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = GE;
-			  $$->lineno = lineno;
                         }
 		| add_exp GT add_exp
                         { $$ = newExpNode(OpK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = GT;
-			  $$->lineno = lineno;
                         }
 		| add_exp { $$ = $1; }
 		;
@@ -262,14 +254,12 @@ add_exp		: add_exp PLUS term
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = PLUS;
-			  $$->lineno = lineno;
                         }
 		| add_exp MINUS term
                         { $$ = newExpNode(OpK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = MINUS;
-			  $$->lineno = lineno;
                         }
 		| term { $$ = $1; }
 		;
@@ -278,14 +268,12 @@ term		: term TIMES factor
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = TIMES;
-			  $$->lineno = lineno;
                         }
 		| term OVER factor
 			{ $$ = newExpNode(OpK);
                           $$->child[0] = $1;
                           $$->child[1] = $3;
                           $$->attr.op = OVER;
-			  $$->lineno = lineno;
                         }
 		| factor { $$ = $1; }
 		;
@@ -295,7 +283,6 @@ factor		: LPAREN exp RPAREN { $$ = $2; }
 		| NUM 
 			{ $$ = newExpNode(ConstK);
                           $$->attr.val = atoi(tokenString);
-			  $$->lineno = lineno;
                         }
 		;
 call		: ID { pushNNode(copyString(oldTokenString)); }
@@ -303,7 +290,6 @@ call		: ID { pushNNode(copyString(oldTokenString)); }
 			{ $$ = newExpNode(CallK);
                           $$->attr.name = popNNode();
 			  $$->child[0] = $4;
-			  $$->lineno = lineno;
                         }
 		;
 args		: arg_list { $$ = $1; }
