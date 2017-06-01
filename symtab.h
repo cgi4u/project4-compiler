@@ -43,7 +43,7 @@ void closeScope(void);
 void st_insert(char * name, int lineno, int loc, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found);
 
 /*	Find the symbol which has the certain name	*/
-BucketList st_lookup(char * name);
+BucketList st_lookup(char * name, int curOnly);
 
 /*	Prints a formattedx listing of the symbol table contents	*/
 void printSymTab(FILE *listing);

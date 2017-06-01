@@ -108,7 +108,7 @@ void st_insert(char * name, int lineno, int loc, NodeKind kind, int subKind, int
 	}
 }
 
-BucketList st_lookup(char * name){
+BucketList st_lookup(char * name, int curOnly){
 	int nextScope = curHashTable->scope;
 	HashTableList tableSearched = curHashTable;
 
@@ -124,6 +124,8 @@ BucketList st_lookup(char * name){
 			l = l->next;
 		if ( l )
 			return l;
+
+		if ( curOnly ) break;
 	}
 
 	return NULL;

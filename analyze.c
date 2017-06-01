@@ -37,10 +37,18 @@ static int nullProc(TreeNode *t){
 }
 
 static int insertNode(TreeNode *t){
+	BucketList found;
+
 	switch (t->nodekind){
 	case DclK:
 		switch (t->kind.dcl){
 			case FuncK:
+				found = st_lookup(t->attr.name, 1);
+				if ( found ){
+					fprintf(listing, "ERROR in line %d : declaration of a duplicated\n", t->lineno);
+					fprintf(listing, "\t\t\tfirst declared at line %d\n", found->lineno);
+					return -1;
+				}
 				st_insert(t->attr.name, t->lineno, location++, DclK, FuncK, 0, t->child[0]->attr.type, NULL);
 				break;
 			case VarK:
