@@ -14,36 +14,8 @@ static int hash (char * key){
 		++i;
 	}
 	return temp;
-}
-/*
-//	The list of line numbers for a symbol
-typedef struct LineListRec{
-	int lineno;
-
-	struct LineListRec *next;
-} * LineList;
-
-//	Bucket list for each symbol. Containing its properties
-typedef struct BucketListRec{
-	char *name;
-	LineList lines;
-	int loc;
-	NodeKind kind;
-	int subKind;
-	int arrSize;
-	TokenType type;
-
-	struct BucketListRec *next;
-} * BucketList;
-
-typedef struct HashTableRec{
-	BucketList hashTable[SIZE];
-	int scope;
+}	
 	
-	struct HashTableRec *outer;
-	struct HashTableRec *inner;
-} * HashTableList;*/
-
 //	The hash table
 static HashTableList hashTableList = NULL;
 static HashTableList curHashTable = NULL;
@@ -54,6 +26,7 @@ void initSymbolTable(void){
 	hashTableList->inner = NULL;
 	hashTableList->outer = NULL;
 	hashTableList->scope = 0;
+	hashTableList->location = 0;
 	curHashTable = hashTableList;
 }
 
@@ -67,6 +40,7 @@ void intoNewScope(void){
 	curHashTable->inner = temp;	
 
 	temp->scope = curHashTable->scope + 1;
+	temp->location = 0;
 	
 	if (hashTableList == curHashTable)
 		hashTableList = temp;
@@ -78,26 +52,49 @@ void closeScope(void){
 	curHashTable = curHashTable->outer;
 }
 
+void insertAllPrmt(BucketList prmtList){
+	while (prmtList){
+		int h = hash(prmtList->name);
+		BucketList l = curHashTable->hashTable[h];
+		BucketList temp = prmtList;
+
+		temp->loc = curHashTable->location++;	
+		if ( l ){
+                        while ( l->next ) l = l->next;
+                        l->next = temp;
+                }
+		else
+			curHashTable->hashTable[h] = temp;
+		prmtList = prmtList->next;
+		temp->next = NULL;
+	}
+}
+
 //	Insertion to hash table
-void st_insert(char * name, int lineno, int loc, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found){
+void st_insert(char * name, int lineno, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found){
 	if (found == NULL){
 		int h = hash(name);
 		BucketList l = curHashTable->hashTable[h];
-		while ( l->next ) l = l->next;
-	
-		l->next = (BucketList)malloc(sizeof(struct BucketListRec));
-		l->next->name = name;
-		l->next->loc = loc;
-		l->next->kind = kind;
-		l->next->subKind = subKind;
-		l->next->arrSize = arrSize;
-		l->next->type = type;
 
-		l->next->lines = (LineList)malloc(sizeof(struct LineListRec));
-                l->next->lines->lineno = lineno;
-		l->next->lines->next = NULL;
+		BucketList temp = (BucketList)malloc(sizeof(struct BucketListRec));	
+		temp->name = name;
+		temp->loc = curHashTable->location++;
+		temp->kind = kind;
+		temp->subKind = subKind;
+		temp->arrSize = arrSize;
+		temp->type = type;
+		temp->next = NULL;
 
-		l->next->next = NULL;
+		temp->lines = (LineList)malloc(sizeof(struct LineListRec));
+                temp->lines->lineno = lineno;
+		temp->lines->next = NULL;
+
+		if ( l ){
+                        while ( l->next ) l = l->next;
+			l->next = temp;
+                }
+		else
+			curHashTable->hashTable[h] = temp;
 	}
 	else{
 		LineList t = found->lines;
@@ -108,24 +105,31 @@ void st_insert(char * name, int lineno, int loc, NodeKind kind, int subKind, int
 	}
 }
 
-BucketList st_lookup(char * name, int curOnly){
+BucketList st_lookup(char * name, int lookupMode){
 	int nextScope = curHashTable->scope;
 	HashTableList tableSearched = curHashTable;
 
 	int h = hash(name);
 	BucketList l;
 
-	while (nextScope >= 0){
-		while (tableSearched->scope != nextScope) tableSearched = tableSearched->outer;
-		nextScope--;
+	if (lookupMode == 0){
+		while (nextScope >= 0){
+			while (tableSearched->scope != nextScope) tableSearched = tableSearched->outer;
+			nextScope--;
 
+			l = tableSearched->hashTable[h];
+			while((l != NULL) && (strcmp(name, l->name) != 0))
+				l = l->next;
+			if ( l )
+				return l;
+		}
+	}
+	else{
 		l = tableSearched->hashTable[h];
-		while((l != NULL) && (strcmp(name, l->name) != 0))
-			l = l->next;
-		if ( l )
-			return l;
-
-		if ( curOnly ) break;
+                while((l != NULL) && (strcmp(name, l->name) != 0))
+                        l = l->next;
+                if ( l )
+                        return l;
 	}
 
 	return NULL;
@@ -137,7 +141,7 @@ void printSymTab(FILE *listing){
 	BucketList l;
 
 	while (cur){
-		fprintf(listing, "Name          Scope  Loc  V/P/F  Array?  ArrSize  Type  Line Numbers\n");
+		fprintf(listing, "\nName          Scope  Loc  V/P/F  Array?  ArrSize  Type  Line Numbers\n");
         	fprintf(listing, "-----------------------------------------------------------------------\n");
 		for (i = 0; i < SIZE; i++){
 			BucketList l = cur->hashTable[i];
@@ -160,9 +164,9 @@ void printSymTab(FILE *listing){
 					fprintf(listing, "%-6s", "array");
 				}
 				else{
-					fprintf(listing, "%-8s", "IntArr");
+					fprintf(listing, "%-8s", "No");
 					fprintf(listing, "%-9s", "-");
-					if (l->type == Void)
+					if (l->type == VOID)
 						fprintf(listing, "%-6s", "void");
 					else
 						fprintf(listing, "%-6s", "int");

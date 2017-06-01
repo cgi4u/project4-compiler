@@ -1,25 +1,33 @@
 int fun(int f){
-	a(1, b(c(d(15)), 7), d(z[8]), 15);
+	int x;
+	return fun(fun(fun(fun(x))));
 }
 
 
 int main(int c, int d[]){
-		void s;
 	int i;
+	int j;
 	int e[10];
 
-	e[5] = 5 + i * add(i+j);
+	e[5] = 5 + i * fun(i+j);
 	
 	if ( 1 )
-		e[4] > i + dl;
+		e[4] > i + j;
 	else {
+		int k;
 		fun(aaa);
 		{
-			int x;
-			x = 1;
-			if ( fun(x) ) return;
-			else a * b + c * e[7] + fun(e[1]);
+			int i;
+			i = 1;
+			if ( fun(i) ) return i;
+			else j * i + e[7] + fun(e[i]);
 		}
+	}
+
+	while ( e[1] + e[2] ){
+		int i;
+		fun(j);
+		fun(i);
 	}
 
 	return 0;

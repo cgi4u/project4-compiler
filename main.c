@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "util.h"
 #include "scan.h"
+#include "analyze.h"
 
 /*allocate global variables*/
 int lineno = 0;
@@ -36,8 +37,13 @@ int main(int argc, char *argv[]){
 	
 	syntaxTree = parse();
 	if (Error) return -1;
-	fprintf(listing, "\nSyntax tree:\n");
-	printTree(syntaxTree);
+	if (NO_ANALYZE){
+		fprintf(listing, "\nSyntax tree:\n");
+		printTree(syntaxTree);
+	}
+
+	fprintf(listing, "\nBuilding Symbol Table...\n");
+	buildSymtab(syntaxTree);
 	
 	fclose(source);
 	return 0;
