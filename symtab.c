@@ -3,7 +3,6 @@
 #include "symtab.h"
 
 //Constants used to control hash table
-#define SIZE 211
 #define SHIFT 4
 
 //	hash function
@@ -16,7 +15,7 @@ static int hash (char * key){
 	}
 	return temp;
 }
-
+/*
 //	The list of line numbers for a symbol
 typedef struct LineListRec{
 	int lineno;
@@ -32,7 +31,7 @@ typedef struct BucketListRec{
 	NodeKind kind;
 	int subKind;
 	int arrSize;
-	ExpType type;
+	TokenType type;
 
 	struct BucketListRec *next;
 } * BucketList;
@@ -43,7 +42,7 @@ typedef struct HashTableRec{
 	
 	struct HashTableRec *outer;
 	struct HashTableRec *inner;
-} * HashTableList;
+} * HashTableList;*/
 
 //	The hash table
 static HashTableList hashTableList = NULL;
@@ -80,44 +79,36 @@ void closeScope(void){
 }
 
 //	Insertion to hash table
-int st_insert(char * name, int lineno, int loc, NodeKind kind, int subKind, int arrSize, ExpType type){
-	int h = hash(name);
-	BucketList l = curHashTable->hashTable[h];
+void st_insert(char * name, int lineno, int loc, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found){
+	if (found == NULL){
+		int h = hash(name);
+		BucketList l = curHashTable->hashTable[h];
+		while ( l->next ) l = l->next;
+	
+		l->next = (BucketList)malloc(sizeof(struct BucketListRec));
+		l->next->name = name;
+		l->next->loc = loc;
+		l->next->kind = kind;
+		l->next->subKind = subKind;
+		l->next->arrSize = arrSize;
+		l->next->type = type;
 
-	while ((l != NULL) && (strcmp(name, l->name) != 0))
-		l = l->next;
+		l->next->lines = (LineList)malloc(sizeof(struct LineListRec));
+                l->next->lines->lineno = lineno;
+		l->next->lines->next = NULL;
 
-	if (l == NULL){
-		if (kind == ExpK)
-			return -1;	//Scoping Error
-		
-		l = (BucketList)malloc(sizeof(struct BucketListRec));
-		l->name = name;		//복사해서 줘야함??
-		l->loc = loc;
-		l->kind = kind;
-		l->subKind = subKind;
-		l->arrSize = arrSize;
-		l->type = type;
-
-		l->lines = (LineList)malloc(sizeof(struct LineListRec));
-                l->lines->lineno = lineno;
-		l->lines->next = NULL;
-
-		l->next = curHashTable->hashTable[h];
-		curHashTable->hashTable[h] = l;
+		l->next->next = NULL;
 	}
 	else{
-		LineList t = l->lines;
+		LineList t = found->lines;
 		while (t->next != NULL) t = t->next;
 		t->next = (LineList)malloc(sizeof(struct LineListRec));
 		t->next->lineno = lineno;
 		t->next->next = NULL;
 	}
-	
-	return 0;
 }
 
-int st_lookup(char * name){
+BucketList st_lookup(char * name){
 	int nextScope = curHashTable->scope;
 	HashTableList tableSearched = curHashTable;
 
@@ -132,10 +123,10 @@ int st_lookup(char * name){
 		while((l != NULL) && (strcmp(name, l->name) != 0))
 			l = l->next;
 		if ( l )
-			return l->loc;
+			return l;
 	}
 
-	return -1;
+	return NULL;
 }
 
 void printSymTab(FILE *listing){
