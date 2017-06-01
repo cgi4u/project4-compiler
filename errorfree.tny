@@ -15,8 +15,7 @@ void voidfunc(void){
 		else{
 			int j;
 			j = fun(j);
-			return;	
-		}
+			}
 		i = 0;
 		while (i < 10)
 			v = v + e[i];
@@ -28,9 +27,10 @@ void voidfunc(void){
 void main(void){
 	int i;
 	int j;
+	
 	int e[10];
 
-	e[5] = 5 + i * fun(i+j);
+	e[5] = 5 + i * fun(i+j) + v;
 	
 	if ( 1 ){
 		int d;

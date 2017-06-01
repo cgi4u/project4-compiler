@@ -275,7 +275,7 @@ int checkNode(TreeNode *t){
 				if (!((par->kind.prmt == VoidK) && !arg)){
 					while ( par || arg ){
 						if (!(par && arg && (par->type == arg->type))){
-                                			fprintf(listing, "ERROR in line %d : argment type error\n", t->lineno);
+                                			fprintf(listing, "ERROR in line %d : argument type error\n", t->lineno);
                                 			return -1;
                         			}
 						par = par->sibling;
