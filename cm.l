@@ -3,6 +3,7 @@
 #include "util.h"
 #include "scan.h"
 
+
 char tokenString[MAXTOKENLEN+1];
 char oldTokenString[MAXTOKENLEN+1];
 %}
