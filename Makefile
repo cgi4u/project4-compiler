@@ -1,5 +1,5 @@
 CC = gcc
-TARGET = 20121653
+TARGET = project4_8
 OBJECTS = main.o util.o symtab.o analyze.o lex.yy.o cm.tab.o
 
 all = $(TARGET)

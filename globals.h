@@ -21,8 +21,8 @@
 #define TRUE 1
 #endif
 
-#define NO_PARSE FALSE
-#define NO_ANALYZE FALSE
+#define NO_PARSE TRUE
+#define NO_ANALYZE TRUE
 
 #define MAXRESERVED 6
 

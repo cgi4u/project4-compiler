@@ -23,6 +23,8 @@ whitespace	[ \t]+
 "return"	{return RETURN;}
 "void"		{return VOID;}
 "while"		{return WHILE;}
+"input"		{return INPUT;}
+"output"	{return OUTPUT;}
 "=="		{return EQ;}
 "!="		{return NE;}
 "<="		{return LE;}

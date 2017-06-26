@@ -10,6 +10,8 @@ void printToken(TokenType token, const char *tokenString){
 		case VOID:	fprintf(listing, "VOID"); break;
 		case WHILE:	fprintf(listing, "WHILE"); break;
 		case RETURN:	fprintf(listing, "RETURN"); break;
+		case INPUT:    	fprintf(listing, "INPUT"); break;
+		case OUTPUT:    fprintf(listing, "OUTPUT"); break;
 		case EQ:	fprintf(listing, "=="); break;
 		case NE:	fprintf(listing, "!="); break;
 		case LE:	fprintf(listing, "<="); break;

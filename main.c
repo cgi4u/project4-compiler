@@ -34,7 +34,8 @@ int main(int argc, char *argv[]){
 		fprintf(listing, "--------------------------------------------------------\n");
 		while (getToken() != ENDFILE);
 	}
-	
+
+	/*	
 	syntaxTree = parse();
 	if (Error) return -1;
 	if (NO_ANALYZE){
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]){
 	typeCheck(syntaxTree);
 	if (Error) return -1;
 	fprintf(listing, "\nType Checking Finished\n");
-	
+	*/
 	fclose(source);
 	return 0;
 }

@@ -168,7 +168,9 @@ extern int yydebug;
     LBRACE = 283,
     RBRACE = 284,
     ERROR = 285,
-    CMERROR = 286
+    CMERROR = 286,
+    INPUT = 287,
+    OUTPUT = 288
   };
 #endif
 
@@ -188,7 +190,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 192 "cm.tab.c" /* yacc.c:358  */
+#line 194 "cm.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -433,7 +435,7 @@ union yyalloc
 #define YYLAST   122
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  32
+#define YYNTOKENS  34
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  34
 /* YYNRULES -- Number of rules.  */
@@ -444,7 +446,7 @@ union yyalloc
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   286
+#define YYMAXUTOK   288
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -481,20 +483,20 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31
+      25,    26,    27,    28,    29,    30,    31,    32,    33
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    52,    52,    55,    65,    67,    68,    70,    70,    76,
-      77,    76,    85,    89,    94,    94,   104,   105,   107,   117,
-     119,   124,   124,   130,   136,   146,   148,   158,   160,   161,
-     162,   163,   164,   166,   167,   169,   174,   181,   187,   191,
-     196,   201,   203,   207,   207,   214,   220,   226,   232,   238,
-     244,   250,   252,   258,   264,   266,   272,   278,   280,   281,
-     282,   283,   288,   288,   295,   296,   298,   308
+       0,    53,    53,    56,    66,    68,    69,    71,    71,    77,
+      78,    77,    86,    90,    95,    95,   105,   106,   108,   118,
+     120,   125,   125,   131,   137,   147,   149,   159,   161,   162,
+     163,   164,   165,   167,   168,   170,   175,   182,   188,   192,
+     197,   202,   204,   208,   208,   215,   221,   227,   233,   239,
+     245,   251,   253,   259,   265,   267,   273,   279,   281,   282,
+     283,   284,   289,   289,   296,   297,   299,   309
 };
 #endif
 
@@ -507,11 +509,12 @@ static const char *const yytname[] =
   "WHILE", "ID", "NUM", "EQ", "NE", "LE", "LT", "GE", "GT", "PLUS",
   "MINUS", "TIMES", "OVER", "ASSIGN", "SEMICOLON", "COLON", "LPAREN",
   "RPAREN", "LSQBRKT", "RSQBRKT", "LBRACE", "RBRACE", "ERROR", "CMERROR",
-  "$accept", "program", "dcl_list", "dcl", "var_dcl", "$@1", "$@2", "$@3",
-  "type_spc", "func_dcl", "$@4", "params", "param_list", "param", "$@5",
-  "comp_stmt", "local_dcls", "stmt_list", "stmt", "exp_stmt", "sel_stmt",
-  "iter_stmt", "ret_stmt", "exp", "var", "$@6", "simple_exp", "add_exp",
-  "term", "factor", "call", "$@7", "args", "arg_list", YY_NULLPTR
+  "INPUT", "OUTPUT", "$accept", "program", "dcl_list", "dcl", "var_dcl",
+  "$@1", "$@2", "$@3", "type_spc", "func_dcl", "$@4", "params",
+  "param_list", "param", "$@5", "comp_stmt", "local_dcls", "stmt_list",
+  "stmt", "exp_stmt", "sel_stmt", "iter_stmt", "ret_stmt", "exp", "var",
+  "$@6", "simple_exp", "add_exp", "term", "factor", "call", "$@7", "args",
+  "arg_list", YY_NULLPTR
 };
 #endif
 
@@ -523,7 +526,7 @@ static const yytype_uint16 yytoknum[] =
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286
+     285,   286,   287,   288
 };
 # endif
 
@@ -633,30 +636,30 @@ static const yytype_int8 yycheck[] =
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     5,     7,    33,    34,    35,    36,    40,    41,     0,
-      35,     9,    37,    38,    42,    22,    26,    24,    10,     7,
-      40,    43,    44,    45,    39,     9,    25,    23,    27,    46,
-      28,    47,    45,    22,    26,    48,    27,    36,    40,    49,
-       9,     3,     6,     8,     9,    10,    22,    24,    29,    47,
-      50,    51,    52,    53,    54,    55,    56,    58,    59,    60,
-      61,    62,    24,    22,    55,    24,    57,    63,    55,    22,
+       0,     5,     7,    35,    36,    37,    38,    42,    43,     0,
+      37,     9,    39,    40,    44,    22,    26,    24,    10,     7,
+      42,    45,    46,    47,    41,     9,    25,    23,    27,    48,
+      28,    49,    47,    22,    26,    50,    27,    38,    42,    51,
+       9,     3,     6,     8,     9,    10,    22,    24,    29,    49,
+      52,    53,    54,    55,    56,    57,    58,    60,    61,    62,
+      63,    64,    24,    22,    57,    24,    59,    65,    57,    22,
       21,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-      20,    55,    22,    55,    26,    24,    25,    55,    56,    59,
-      59,    59,    59,    59,    59,    60,    60,    61,    61,    25,
-      25,    55,    55,    64,    65,    50,    50,    27,    25,    23,
-       4,    55,    50
+      20,    57,    22,    57,    26,    24,    25,    57,    58,    61,
+      61,    61,    61,    61,    61,    62,    62,    63,    63,    25,
+      25,    57,    57,    66,    67,    52,    52,    27,    25,    23,
+       4,    57,    52
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    32,    33,    34,    34,    35,    35,    37,    36,    38,
-      39,    36,    40,    40,    42,    41,    43,    43,    44,    44,
-      45,    46,    45,    47,    48,    48,    49,    49,    50,    50,
-      50,    50,    50,    51,    51,    52,    52,    53,    54,    54,
-      55,    55,    56,    57,    56,    58,    58,    58,    58,    58,
-      58,    58,    59,    59,    59,    60,    60,    60,    61,    61,
-      61,    61,    63,    62,    64,    64,    65,    65
+       0,    34,    35,    36,    36,    37,    37,    39,    38,    40,
+      41,    38,    42,    42,    44,    43,    45,    45,    46,    46,
+      47,    48,    47,    49,    50,    50,    51,    51,    52,    52,
+      52,    52,    52,    53,    53,    54,    54,    55,    56,    56,
+      57,    57,    58,    59,    58,    60,    60,    60,    60,    60,
+      60,    60,    61,    61,    61,    62,    62,    62,    63,    63,
+      63,    63,    65,    64,    66,    66,    67,    67
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -1345,13 +1348,13 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 53 "cm.y" /* yacc.c:1646  */
+#line 54 "cm.y" /* yacc.c:1646  */
     { savedTree = (yyvsp[0]); }
-#line 1351 "cm.tab.c" /* yacc.c:1646  */
+#line 1354 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 56 "cm.y" /* yacc.c:1646  */
+#line 57 "cm.y" /* yacc.c:1646  */
     { YYSTYPE t = (yyvsp[-1]);
 			  if (t != NULL){
 			  	while (t->sibling != NULL)
@@ -1361,90 +1364,90 @@ yyreduce:
 			  }
 			  else (yyval) = (yyvsp[0]);
 			}
-#line 1365 "cm.tab.c" /* yacc.c:1646  */
+#line 1368 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 65 "cm.y" /* yacc.c:1646  */
+#line 66 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1371 "cm.tab.c" /* yacc.c:1646  */
+#line 1374 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 67 "cm.y" /* yacc.c:1646  */
+#line 68 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1377 "cm.tab.c" /* yacc.c:1646  */
+#line 1380 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 68 "cm.y" /* yacc.c:1646  */
+#line 69 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1383 "cm.tab.c" /* yacc.c:1646  */
+#line 1386 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 70 "cm.y" /* yacc.c:1646  */
+#line 71 "cm.y" /* yacc.c:1646  */
     { savedName = copyString(oldTokenString);}
-#line 1389 "cm.tab.c" /* yacc.c:1646  */
+#line 1392 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 71 "cm.y" /* yacc.c:1646  */
+#line 72 "cm.y" /* yacc.c:1646  */
     { (yyval) = newDclNode(VarK);
 			  (yyval)->child[0] = (yyvsp[-3]);
 			  (yyval)->lineno = lineno;
 			  (yyval)->attr.name = savedName;
 		  	}
-#line 1399 "cm.tab.c" /* yacc.c:1646  */
+#line 1402 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 76 "cm.y" /* yacc.c:1646  */
+#line 77 "cm.y" /* yacc.c:1646  */
     { savedName = copyString(oldTokenString); }
-#line 1405 "cm.tab.c" /* yacc.c:1646  */
+#line 1408 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 77 "cm.y" /* yacc.c:1646  */
+#line 78 "cm.y" /* yacc.c:1646  */
     { savedNum = atoi(tokenString); }
-#line 1411 "cm.tab.c" /* yacc.c:1646  */
+#line 1414 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 78 "cm.y" /* yacc.c:1646  */
+#line 79 "cm.y" /* yacc.c:1646  */
     { (yyval) = newDclNode(ArrK);
 			  (yyval)->child[0] = (yyvsp[-7]);
 			  (yyval)->lineno = lineno;
 			  (yyval)->attr.arrProp.name = savedName;
 			  (yyval)->attr.arrProp.size = savedNum;
 			}
-#line 1422 "cm.tab.c" /* yacc.c:1646  */
+#line 1425 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 86 "cm.y" /* yacc.c:1646  */
+#line 87 "cm.y" /* yacc.c:1646  */
     { (yyval) = newTypeNode();
 			  (yyval)->attr.type = INT;
 			}
-#line 1430 "cm.tab.c" /* yacc.c:1646  */
+#line 1433 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 90 "cm.y" /* yacc.c:1646  */
+#line 91 "cm.y" /* yacc.c:1646  */
     { (yyval) = newTypeNode();
                           (yyval)->attr.type = VOID;
                         }
-#line 1438 "cm.tab.c" /* yacc.c:1646  */
+#line 1441 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 94 "cm.y" /* yacc.c:1646  */
+#line 95 "cm.y" /* yacc.c:1646  */
     { pushNNode(copyString(oldTokenString)); savedLineno = lineno; }
-#line 1444 "cm.tab.c" /* yacc.c:1646  */
+#line 1447 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 96 "cm.y" /* yacc.c:1646  */
+#line 97 "cm.y" /* yacc.c:1646  */
     { (yyval) = newDclNode(FuncK);
 			  (yyval)->child[0] = (yyvsp[-6]);
 			  (yyval)->child[1] = (yyvsp[-2]);
@@ -1452,23 +1455,23 @@ yyreduce:
 			  (yyval)->attr.name = popNNode();
 			  (yyval)->lineno = savedLineno;
 			}
-#line 1456 "cm.tab.c" /* yacc.c:1646  */
+#line 1459 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 104 "cm.y" /* yacc.c:1646  */
+#line 105 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1462 "cm.tab.c" /* yacc.c:1646  */
+#line 1465 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 105 "cm.y" /* yacc.c:1646  */
+#line 106 "cm.y" /* yacc.c:1646  */
     { (yyval) = newPrmtNode(VoidK); }
-#line 1468 "cm.tab.c" /* yacc.c:1646  */
+#line 1471 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 108 "cm.y" /* yacc.c:1646  */
+#line 109 "cm.y" /* yacc.c:1646  */
     { YYSTYPE t = (yyvsp[-2]);
                           if (t != NULL){
                                 while (t->sibling != NULL)
@@ -1478,50 +1481,50 @@ yyreduce:
                           }
                           else (yyval) = (yyvsp[0]);
                         }
-#line 1482 "cm.tab.c" /* yacc.c:1646  */
+#line 1485 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 117 "cm.y" /* yacc.c:1646  */
+#line 118 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1488 "cm.tab.c" /* yacc.c:1646  */
+#line 1491 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 120 "cm.y" /* yacc.c:1646  */
+#line 121 "cm.y" /* yacc.c:1646  */
     { (yyval) = newPrmtNode(IntK);
                           (yyval)->child[0] = (yyvsp[-1]);
                           (yyval)->attr.name = copyString(oldTokenString);
                         }
-#line 1497 "cm.tab.c" /* yacc.c:1646  */
+#line 1500 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 124 "cm.y" /* yacc.c:1646  */
+#line 125 "cm.y" /* yacc.c:1646  */
     { savedName = copyString(oldTokenString); }
-#line 1503 "cm.tab.c" /* yacc.c:1646  */
+#line 1506 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 125 "cm.y" /* yacc.c:1646  */
+#line 126 "cm.y" /* yacc.c:1646  */
     { (yyval) = newPrmtNode(IntArrK);
                           (yyval)->child[0] = (yyvsp[-4]);
                           (yyval)->attr.name = savedName;
                         }
-#line 1512 "cm.tab.c" /* yacc.c:1646  */
+#line 1515 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 131 "cm.y" /* yacc.c:1646  */
+#line 132 "cm.y" /* yacc.c:1646  */
     { (yyval) = newStmtNode(CompK);
 			  (yyval)->child[0] = (yyvsp[-2]);
 			  (yyval)->child[1] = (yyvsp[-1]);
 			}
-#line 1521 "cm.tab.c" /* yacc.c:1646  */
+#line 1524 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 137 "cm.y" /* yacc.c:1646  */
+#line 138 "cm.y" /* yacc.c:1646  */
     { YYSTYPE t = (yyvsp[-1]);
                           if (t != NULL){
                                 while (t->sibling != NULL)
@@ -1531,17 +1534,17 @@ yyreduce:
                           }
                           else (yyval) = (yyvsp[0]);
                         }
-#line 1535 "cm.tab.c" /* yacc.c:1646  */
+#line 1538 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 146 "cm.y" /* yacc.c:1646  */
+#line 147 "cm.y" /* yacc.c:1646  */
     { (yyval) = NULL; }
-#line 1541 "cm.tab.c" /* yacc.c:1646  */
+#line 1544 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 149 "cm.y" /* yacc.c:1646  */
+#line 150 "cm.y" /* yacc.c:1646  */
     { YYSTYPE t = (yyvsp[-1]);
                           if (t != NULL){
                                 while (t->sibling != NULL)
@@ -1551,312 +1554,312 @@ yyreduce:
                           }
                           else (yyval) = (yyvsp[0]);
                         }
-#line 1555 "cm.tab.c" /* yacc.c:1646  */
+#line 1558 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 158 "cm.y" /* yacc.c:1646  */
+#line 159 "cm.y" /* yacc.c:1646  */
     { (yyval) = NULL; }
-#line 1561 "cm.tab.c" /* yacc.c:1646  */
+#line 1564 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 160 "cm.y" /* yacc.c:1646  */
+#line 161 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1567 "cm.tab.c" /* yacc.c:1646  */
+#line 1570 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 161 "cm.y" /* yacc.c:1646  */
+#line 162 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1573 "cm.tab.c" /* yacc.c:1646  */
+#line 1576 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 162 "cm.y" /* yacc.c:1646  */
+#line 163 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1579 "cm.tab.c" /* yacc.c:1646  */
+#line 1582 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 163 "cm.y" /* yacc.c:1646  */
+#line 164 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1585 "cm.tab.c" /* yacc.c:1646  */
+#line 1588 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 164 "cm.y" /* yacc.c:1646  */
+#line 165 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1591 "cm.tab.c" /* yacc.c:1646  */
+#line 1594 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 166 "cm.y" /* yacc.c:1646  */
+#line 167 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-1]); }
-#line 1597 "cm.tab.c" /* yacc.c:1646  */
+#line 1600 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 167 "cm.y" /* yacc.c:1646  */
+#line 168 "cm.y" /* yacc.c:1646  */
     { (yyval) = NULL; }
-#line 1603 "cm.tab.c" /* yacc.c:1646  */
+#line 1606 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 170 "cm.y" /* yacc.c:1646  */
+#line 171 "cm.y" /* yacc.c:1646  */
     { (yyval) = newStmtNode(SelK);
 			  (yyval)->child[0] = (yyvsp[-2]);
 			  (yyval)->child[1] = (yyvsp[0]);
 			}
-#line 1612 "cm.tab.c" /* yacc.c:1646  */
+#line 1615 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 175 "cm.y" /* yacc.c:1646  */
+#line 176 "cm.y" /* yacc.c:1646  */
     { (yyval) = newStmtNode(SelK); 
                           (yyval)->child[0] = (yyvsp[-4]);
                           (yyval)->child[1] = (yyvsp[-2]);
 			  (yyval)->child[2] = (yyvsp[0]);
                         }
-#line 1622 "cm.tab.c" /* yacc.c:1646  */
+#line 1625 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 182 "cm.y" /* yacc.c:1646  */
+#line 183 "cm.y" /* yacc.c:1646  */
     { (yyval) = newStmtNode(IterK);
 			  (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
 			}
-#line 1631 "cm.tab.c" /* yacc.c:1646  */
+#line 1634 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 188 "cm.y" /* yacc.c:1646  */
+#line 189 "cm.y" /* yacc.c:1646  */
     { (yyval) = newStmtNode(RetK); 
 			  (yyval)->child[0] = NULL;
 			}
-#line 1639 "cm.tab.c" /* yacc.c:1646  */
+#line 1642 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 192 "cm.y" /* yacc.c:1646  */
+#line 193 "cm.y" /* yacc.c:1646  */
     { (yyval) = newStmtNode(RetK); 
 			  (yyval)->child[0] = (yyvsp[-1]);
 			}
-#line 1647 "cm.tab.c" /* yacc.c:1646  */
+#line 1650 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 197 "cm.y" /* yacc.c:1646  */
+#line 198 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(AssignK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                         }
-#line 1656 "cm.tab.c" /* yacc.c:1646  */
+#line 1659 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 201 "cm.y" /* yacc.c:1646  */
+#line 202 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1662 "cm.tab.c" /* yacc.c:1646  */
+#line 1665 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 204 "cm.y" /* yacc.c:1646  */
+#line 205 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(IdK);
 			  (yyval)->attr.name = copyString(oldTokenString);
                         }
-#line 1670 "cm.tab.c" /* yacc.c:1646  */
+#line 1673 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 207 "cm.y" /* yacc.c:1646  */
+#line 208 "cm.y" /* yacc.c:1646  */
     { pushNNode(copyString(oldTokenString)); }
-#line 1676 "cm.tab.c" /* yacc.c:1646  */
+#line 1679 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 209 "cm.y" /* yacc.c:1646  */
+#line 210 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(ArrIdK);
                           (yyval)->attr.name = popNNode();
 			  (yyval)->child[0] = (yyvsp[-1]);
                         }
-#line 1685 "cm.tab.c" /* yacc.c:1646  */
+#line 1688 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 215 "cm.y" /* yacc.c:1646  */
+#line 216 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
 			  (yyval)->child[1] = (yyvsp[0]);
 			  (yyval)->attr.op = EQ;
                         }
-#line 1695 "cm.tab.c" /* yacc.c:1646  */
+#line 1698 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 221 "cm.y" /* yacc.c:1646  */
+#line 222 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = NE;
                         }
-#line 1705 "cm.tab.c" /* yacc.c:1646  */
+#line 1708 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 227 "cm.y" /* yacc.c:1646  */
+#line 228 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = LE;
                         }
-#line 1715 "cm.tab.c" /* yacc.c:1646  */
+#line 1718 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 233 "cm.y" /* yacc.c:1646  */
+#line 234 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = LT;
                         }
-#line 1725 "cm.tab.c" /* yacc.c:1646  */
+#line 1728 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 239 "cm.y" /* yacc.c:1646  */
+#line 240 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = GE;
                         }
-#line 1735 "cm.tab.c" /* yacc.c:1646  */
+#line 1738 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 245 "cm.y" /* yacc.c:1646  */
+#line 246 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = GT;
                         }
-#line 1745 "cm.tab.c" /* yacc.c:1646  */
+#line 1748 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 250 "cm.y" /* yacc.c:1646  */
+#line 251 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1751 "cm.tab.c" /* yacc.c:1646  */
+#line 1754 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 253 "cm.y" /* yacc.c:1646  */
+#line 254 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = PLUS;
                         }
-#line 1761 "cm.tab.c" /* yacc.c:1646  */
+#line 1764 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 259 "cm.y" /* yacc.c:1646  */
+#line 260 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = MINUS;
                         }
-#line 1771 "cm.tab.c" /* yacc.c:1646  */
+#line 1774 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 264 "cm.y" /* yacc.c:1646  */
+#line 265 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1777 "cm.tab.c" /* yacc.c:1646  */
+#line 1780 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 267 "cm.y" /* yacc.c:1646  */
+#line 268 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = TIMES;
                         }
-#line 1787 "cm.tab.c" /* yacc.c:1646  */
+#line 1790 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 273 "cm.y" /* yacc.c:1646  */
+#line 274 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(OpK);
                           (yyval)->child[0] = (yyvsp[-2]);
                           (yyval)->child[1] = (yyvsp[0]);
                           (yyval)->attr.op = OVER;
                         }
-#line 1797 "cm.tab.c" /* yacc.c:1646  */
+#line 1800 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 278 "cm.y" /* yacc.c:1646  */
+#line 279 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1803 "cm.tab.c" /* yacc.c:1646  */
+#line 1806 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 280 "cm.y" /* yacc.c:1646  */
+#line 281 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-1]); }
-#line 1809 "cm.tab.c" /* yacc.c:1646  */
+#line 1812 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 281 "cm.y" /* yacc.c:1646  */
+#line 282 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1815 "cm.tab.c" /* yacc.c:1646  */
+#line 1818 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 282 "cm.y" /* yacc.c:1646  */
+#line 283 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1821 "cm.tab.c" /* yacc.c:1646  */
+#line 1824 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 284 "cm.y" /* yacc.c:1646  */
+#line 285 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(ConstK);
                           (yyval)->attr.val = atoi(tokenString);
                         }
-#line 1829 "cm.tab.c" /* yacc.c:1646  */
+#line 1832 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 288 "cm.y" /* yacc.c:1646  */
+#line 289 "cm.y" /* yacc.c:1646  */
     { pushNNode(copyString(oldTokenString)); }
-#line 1835 "cm.tab.c" /* yacc.c:1646  */
+#line 1838 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 290 "cm.y" /* yacc.c:1646  */
+#line 291 "cm.y" /* yacc.c:1646  */
     { (yyval) = newExpNode(CallK);
                           (yyval)->attr.name = popNNode();
 			  (yyval)->child[0] = (yyvsp[-1]);
                         }
-#line 1844 "cm.tab.c" /* yacc.c:1646  */
+#line 1847 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 295 "cm.y" /* yacc.c:1646  */
+#line 296 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1850 "cm.tab.c" /* yacc.c:1646  */
+#line 1853 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 296 "cm.y" /* yacc.c:1646  */
+#line 297 "cm.y" /* yacc.c:1646  */
     { (yyval) = NULL; }
-#line 1856 "cm.tab.c" /* yacc.c:1646  */
+#line 1859 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 299 "cm.y" /* yacc.c:1646  */
+#line 300 "cm.y" /* yacc.c:1646  */
     { YYSTYPE t = (yyvsp[-2]);
                           if (t != NULL){
                                 while (t->sibling != NULL)
@@ -1866,17 +1869,17 @@ yyreduce:
                           }
                           else (yyval) = (yyvsp[0]);
                         }
-#line 1870 "cm.tab.c" /* yacc.c:1646  */
+#line 1873 "cm.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 308 "cm.y" /* yacc.c:1646  */
+#line 309 "cm.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[0]); }
-#line 1876 "cm.tab.c" /* yacc.c:1646  */
+#line 1879 "cm.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1880 "cm.tab.c" /* yacc.c:1646  */
+#line 1883 "cm.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2104,7 +2107,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 311 "cm.y" /* yacc.c:1906  */
+#line 312 "cm.y" /* yacc.c:1906  */
 
 
 int yyerror(char * message){ 

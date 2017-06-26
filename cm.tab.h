@@ -73,7 +73,9 @@ extern int yydebug;
     LBRACE = 283,
     RBRACE = 284,
     ERROR = 285,
-    CMERROR = 286
+    CMERROR = 286,
+    INPUT = 287,
+    OUTPUT = 288
   };
 #endif
 
