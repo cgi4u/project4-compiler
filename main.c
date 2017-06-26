@@ -34,8 +34,7 @@ int main(int argc, char *argv[]){
 		fprintf(listing, "--------------------------------------------------------\n");
 		while (getToken() != ENDFILE);
 	}
-
-	/*	
+	
 	syntaxTree = parse();
 	if (Error) return -1;
 	if (NO_ANALYZE){
@@ -43,6 +42,7 @@ int main(int argc, char *argv[]){
 		printTree(syntaxTree);
 	}
 
+	/*
 	fprintf(listing, "\nBuilding Symbol Table...\n");
 	buildSymtab(syntaxTree);
 	if (Error) return -1;	

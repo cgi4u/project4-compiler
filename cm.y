@@ -285,6 +285,8 @@ factor		: LPAREN exp RPAREN { $$ = $2; }
 			{ $$ = newExpNode(ConstK);
                           $$->attr.val = atoi(tokenString);
                         }
+		| input { $$ = $1; }
+		| output { $$ = $1; }
 		;
 call		: ID { pushNNode(copyString(oldTokenString)); }
 		  LPAREN args RPAREN
@@ -307,6 +309,16 @@ arg_list	: arg_list COLON exp
                           else $$ = $3;
                         }
 		| exp { $$ = $1; }
+input		: INPUT LPAREN var RPAREN
+			{
+				$$ = newExpNode(InK);
+				$$->child[0] = $3;
+			}
+output          : OUTPUT LPAREN var RPAREN
+                        {
+                                $$ = newExpNode(OutK);
+                                $$->child[0] = $3;
+                        }
 		;
 
 %%

@@ -21,7 +21,7 @@
 #define TRUE 1
 #endif
 
-#define NO_PARSE TRUE
+#define NO_PARSE FALSE
 #define NO_ANALYZE TRUE
 
 #define MAXRESERVED 6
@@ -58,7 +58,7 @@ typedef struct arrayProp{
 
 typedef enum {StmtK,ExpK,DclK,PrmtK,TypeK} NodeKind;
 typedef enum {CompK,SelK,IterK,RetK} StmtKind;
-typedef enum {AssignK,OpK,ConstK,IdK,ArrIdK,CallK} ExpKind;
+typedef enum {AssignK,OpK,ConstK,IdK,ArrIdK,CallK,InK,OutK} ExpKind;
 typedef enum {FuncK,VarK,ArrK} DclKind;
 typedef enum {IntK,VoidK,IntArrK} PrmtKind;
 

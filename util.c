@@ -206,6 +206,12 @@ void printTree( TreeNode * tree){
 				case CallK:
 					fprintf(listing, "Function Call(expressions below are arguments): %s\n", tree->attr.name);
 					break;
+				case InK:
+					fprintf(listing, "Input to:\n");
+					break;
+				case OutK:
+					fprintf(listing, "Output to:\n");
+                                        break;
 				default:
 					fprintf(listing, "Unknown Node Type\n");
 			}
