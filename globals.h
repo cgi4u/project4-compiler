@@ -44,6 +44,7 @@ typedef enum
 
 extern FILE *source;	//source code text file
 extern FILE *listing;	//listing output text file(or standard output)
+extern FILE* code; 	// code text file for simulator
 
 extern int lineno;	//source code line number for listing
 
@@ -83,6 +84,9 @@ typedef struct treeNode{
              	char * name;
              	arrayProp arrProp;
      	} attr;
+	
+	int location;
+	struct treeNode *dclNode;
 	ExpType type;
 } TreeNode;
 

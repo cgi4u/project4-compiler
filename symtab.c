@@ -29,6 +29,9 @@ void initSymbolTable(void){
 	hashTableList->location = 0;
 	hashTableList->visited = 0;
 	curHashTable = hashTableList;
+
+	hashTableList->par_loc = 0;
+	hashTableList->var_loc = -8;
 }
 
 //	Come into new scope
@@ -43,6 +46,9 @@ void intoNewScope(void){
 	temp->scope = curHashTable->scope + 1;
 	temp->location = 0;
 	temp->visited = 0;
+
+	temp->par_loc = 0;
+        temp->var_loc = -8;
 	
 	if (hashTableList == curHashTable)
 		hashTableList = temp;
@@ -81,13 +87,23 @@ void outScope(void){
 	curHashTable = temp;
 }
 
+void clearVisit(void){
+	HashTableList temp = hashTableList;
+	while (temp){
+		printf("ff\n");
+		temp->visited = 0;
+	}
+}
+
 void insertAllPrmt(BucketList prmtList){
 	while (prmtList){
 		int h = hash(prmtList->name);
 		BucketList l = curHashTable->hashTable[h];
 		BucketList temp = prmtList;
 
-		temp->loc = curHashTable->location++;	
+		temp->loc = curHashTable->location++;
+		temp->symbol_location = curHashTable->par_loc;
+		curHashTable->par_loc += 4;	
 		if ( l ){
                         while ( l->next ) l = l->next;
                         l->next = temp;
@@ -100,7 +116,7 @@ void insertAllPrmt(BucketList prmtList){
 }
 
 //	Insertion to hash table
-void st_insert(char * name, int lineno, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found){
+void st_insert(char * name, int lineno, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found, TreeNode *symbolNode){
 	if (found == NULL){
 		int h = hash(name);
 		BucketList l = curHashTable->hashTable[h];
@@ -113,6 +129,23 @@ void st_insert(char * name, int lineno, NodeKind kind, int subKind, int arrSize,
 		temp->arrSize = arrSize;
 		temp->type = type;
 		temp->next = NULL;
+
+		if (kind == DclK){ 
+			if (curHashTable->scope != 0){
+				if (subKind == VarK)
+					curHashTable->var_loc -= 4;
+				else if (subKind == ArrK)
+					curHashTable->var_loc -= 4 * arrSize;
+				temp->symbol_location = curHashTable->var_loc;
+			}
+			else{
+				if (subKind == VarK)
+                                        temp->symbol_location = 4;
+                                else if (subKind == ArrK)
+                                        temp->symbol_location = 4 * arrSize;
+			}
+		}
+		temp->symbolNode = symbolNode;
 
 		temp->lines = (LineList)malloc(sizeof(struct LineListRec));
                 temp->lines->lineno = lineno;
@@ -177,7 +210,10 @@ void printSymTab(FILE *listing){
 			while ( l ){
 				fprintf(listing, "%-14s", l->name);
 				fprintf(listing, "%-7d", cur->scope);
-				fprintf(listing, "%-5d", l->loc);
+				if (l->kind == PrmtK || (l->kind == DclK && l->subKind != FuncK))
+					fprintf(listing, "%-5d", l->symbol_location);
+				else
+					fprintf(listing, "%-5d", l->loc);
 				if (l->kind == PrmtK){
 					fprintf(listing, "%-7s", "Par");
 				}

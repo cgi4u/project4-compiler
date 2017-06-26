@@ -22,6 +22,9 @@ typedef struct BucketListRec{
         int arrSize;
         TokenType type;
 
+	int symbol_location;
+	TreeNode *symbolNode;
+	
         struct BucketListRec *next;
 } * BucketList;
 
@@ -29,6 +32,9 @@ typedef struct HashTableRec{
         BucketList hashTable[SIZE];
         int scope;
 	int location;
+
+	int par_loc;
+	int var_loc;
 	
 	int visited;
 
@@ -45,8 +51,10 @@ void closeScope(void);
 void inScope(void);
 void outScope(void);
 
+void clearVisit(void);
+
 /*	Inserts symbol and its properties to symbol table	*/
-void st_insert(char * name, int lineno, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found);
+void st_insert(char * name, int lineno, NodeKind kind, int subKind, int arrSize, TokenType type, BucketList found, TreeNode *symbolNode);
 
 void insertAllPrmt(BucketList);
 

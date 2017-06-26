@@ -88,7 +88,7 @@ static int insertNode(TreeNode *t){
 				if (strcmp(t->attr.name, "main") == 0)
 					mainFlag = 1;
 
-				st_insert(t->attr.name, t->lineno, DclK, FuncK, 0, t->child[0]->attr.type, NULL);
+				st_insert(t->attr.name, t->lineno, DclK, FuncK, 0, t->child[0]->attr.type, NULL, t);
 				break;
 			case VarK: 
 				found = st_lookup(t->attr.name, 1);
@@ -97,7 +97,7 @@ static int insertNode(TreeNode *t){
                                         fprintf(listing, "\t\t\tfirst declared at line %d\n", found->lines->lineno);
                                         return -1;
                                 }
-                                st_insert(t->attr.name, t->lineno, DclK, VarK, 0, t->child[0]->attr.type, NULL);
+                                st_insert(t->attr.name, t->lineno, DclK, VarK, 0, t->child[0]->attr.type, NULL, t);
 				break;
 			case ArrK:
 				found = st_lookup(t->attr.arrProp.name, 1);
@@ -106,7 +106,7 @@ static int insertNode(TreeNode *t){
                                         fprintf(listing, "\t\t\tfirst declared at line %d\n", found->lines->lineno);
                                         return -1;
                                 }
-                                st_insert(t->attr.arrProp.name, t->lineno, DclK, ArrK, t->attr.arrProp.size, t->child[0]->attr.type, NULL);
+                                st_insert(t->attr.arrProp.name, t->lineno, DclK, ArrK, t->attr.arrProp.size, t->child[0]->attr.type, NULL, t);
 				break;
 		}
 		break;
@@ -135,7 +135,12 @@ static int insertNode(TreeNode *t){
                                         fprintf(listing, "ERROR in line %d : variable %s not exist\n", t->lineno, t->attr.name);
                                         return -1;
                                 }
-                                st_insert(NULL, t->lineno, 0, 0, 0, 0, found);
+                                st_insert(NULL, t->lineno, 0, 0, 0, 0, found, NULL);
+				t->location = found->symbol_location;
+				if (t->location < 0)
+					t->dclNode = found->symbolNode;
+				else
+					t->dclNode = NULL;
 				break;
 			case CallK:
                                 found = st_lookup(t->attr.name, 0);
@@ -143,7 +148,7 @@ static int insertNode(TreeNode *t){
                                         fprintf(listing, "ERROR in line %d : function %s not exist\n", t->lineno, t->attr.name);
                                         return -1;
                                 }
-                                st_insert(NULL, t->lineno, 0, 0, 0, 0, found);
+                                st_insert(NULL, t->lineno, 0, 0, 0, 0, found, NULL);
 			default: break;
 		}
 	case StmtK:
@@ -228,12 +233,14 @@ int checkNode(TreeNode *t){
 		switch (t->kind.stmt){
 		case SelK:  
 		case IterK: 
+			printf("1\n");
 			if (t->child[0]->type != Integer){
 				fprintf(listing, "ERROR in line %d : condition must be integer type\n", t->child[0]->lineno);               
                                 return -1;	
 			}
 			break;
 		case RetK: 
+			printf("2\n");
 			if (t->child[0]){
 				if (curFuncRetType != t->child[0]->type){
                                 	fprintf(listing, "ERROR in line %d : wrong return type\n", t->child[0]->lineno);
@@ -253,6 +260,7 @@ int checkNode(TreeNode *t){
 		switch (t->kind.exp){
 		case AssignK:
 		case OpK:
+			printf("3\n");
 			if ((t->child[0]->type != Integer) || (t->child[1]->type != Integer)){
 				fprintf(listing, "ERROR in line %d : invalid operand\n", t->lineno);                   
                                 return -1;
@@ -260,9 +268,11 @@ int checkNode(TreeNode *t){
 			t->type = Integer;
 			break;
 		case ConstK:
+			printf("4\n");
 			t->type = Integer;
                         break;
 		case IdK:
+			printf("5\n");
 			found = st_lookup(t->attr.name, 0);
 			if (found->subKind == 2)
 				t->type = Array;
@@ -270,6 +280,7 @@ int checkNode(TreeNode *t){
 				t->type = Integer;
                         break;
 		case ArrIdK:	
+			printf("6\n");
 			found = st_lookup(t->attr.name, 0);
 			if (found->subKind != 2){
 				fprintf(listing, "ERROR in line %d : array name is required in array expression\n", t->lineno);
@@ -282,6 +293,7 @@ int checkNode(TreeNode *t){
 			t->type = Integer;
 			break;
 		case CallK:
+			printf("7\n");
 			found = st_lookup(t->attr.name, 0);
 			if ((found->kind != DclK) || (found->subKind != FuncK)){
                                 fprintf(listing, "ERROR in line %d : function name is required in function call\n", t->lineno);
@@ -315,6 +327,7 @@ int checkNode(TreeNode *t){
 			break;
 		case InK:
 		case OutK:
+			printf("8\n");
 			if (t->child[0]->type != Integer){
                                 fprintf(listing, "ERROR in line %d : cannot use void expression for output\n", t->lineno);
                                 return -1;
@@ -329,12 +342,14 @@ int checkNode(TreeNode *t){
 		switch (t->kind.dcl){
 		case VarK: 
 		case ArrK:
+			printf("9\n");
 			if (t->child[0]->attr.type == VOID){
 				fprintf(listing, "ERROR in line %d : variable cannot have void type\n", t->lineno);	
 				return -1;
 			}
 			break;
 		case FuncK:
+			printf("10\n");
 			if (strcmp(t->attr.name, "main") == 0){
 				if (t->child[0]->attr.type != VOID){
 					fprintf(listing, "ERROR in line %d : main fuction should return void\n", t->lineno); 
@@ -351,6 +366,7 @@ int checkNode(TreeNode *t){
 	case PrmtK:
 		switch (t->kind.prmt){
 		case IntK:
+			printf("11\n");
 			if (t->child[0]->attr.type == VOID){
 				fprintf(listing, "ERROR in line %d : parameter cannot have void type\n", t->lineno);
 				return -1;
@@ -358,6 +374,7 @@ int checkNode(TreeNode *t){
 			t->type = Integer;
 			break;
 		case IntArrK:
+			printf("12\n");
 			if (t->child[0]->attr.type == VOID){                                
 				fprintf(listing, "ERROR in line %d : parameter cannot have void type\n", t->lineno);
                                 return -1;
@@ -373,7 +390,10 @@ int checkNode(TreeNode *t){
 }
 
 int checkTree(TreeNode *t){
-	int compFlag = 0;	
+	int compFlag = 0;
+
+	//static int debug = 0;
+	//printf("%d\n", debug++);	
 
         if (t != NULL){
 		if ((t->nodekind == StmtK) && (t->kind.stmt == CompK)){
