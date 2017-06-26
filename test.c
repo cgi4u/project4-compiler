@@ -1,3 +1,6 @@
+void func(void){
+}
+
 void main(void){
 	int a;
 	int b;
@@ -16,5 +19,6 @@ void main(void){
 	d = a / b - c * c; /*6 */
 	output(d);
 	input(a);
+	func();
 	output(a);
 }

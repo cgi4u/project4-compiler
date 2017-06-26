@@ -42,7 +42,6 @@ int main(int argc, char *argv[]){
 		printTree(syntaxTree);
 	}
 
-	/*
 	fprintf(listing, "\nBuilding Symbol Table...\n");
 	buildSymtab(syntaxTree);
 	if (Error) return -1;	
@@ -50,7 +49,7 @@ int main(int argc, char *argv[]){
 	typeCheck(syntaxTree);
 	if (Error) return -1;
 	fprintf(listing, "\nType Checking Finished\n");
-	*/
+		
 	fclose(source);
 	return 0;
 }

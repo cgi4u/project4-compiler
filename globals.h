@@ -22,7 +22,7 @@
 #endif
 
 #define NO_PARSE FALSE
-#define NO_ANALYZE TRUE
+#define NO_ANALYZE FALSE
 
 #define MAXRESERVED 6
 

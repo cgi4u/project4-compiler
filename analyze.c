@@ -59,6 +59,8 @@ static void insertPrmtQueue(char *name, int lineno, PrmtKind pkind){
         prmtQueueEnd->lines->lineno = lineno;
         prmtQueueEnd->lines->next = NULL;
 }
+	
+static int returnFlag = 0;
 
 static int insertNode(TreeNode *t){
 	BucketList found;
@@ -143,7 +145,11 @@ static int insertNode(TreeNode *t){
                                 }
                                 st_insert(NULL, t->lineno, 0, 0, 0, 0, found);
 			default: break;
-		}	
+		}
+	case StmtK:
+                if (t->kind.stmt == RetK)
+                        returnFlag = 1;
+                break;
 	default: break;
 	}
 	
@@ -152,8 +158,14 @@ static int insertNode(TreeNode *t){
 
 int buildSymtabNode(TreeNode *t){
 	int compFlag = 0;
+	static int funcFlag = 0;
+        int innerFuncFlag = 0;
 
         if (t != NULL){
+		if ((t->nodekind == DclK) && (t->kind.stmt == FuncK)
+                                        && (t->child[0]->attr.type == INT)){
+                        funcFlag = 1;
+                }
                 if ((t->nodekind == StmtK) && (t->kind.stmt == CompK)){
                         compFlag = 1;
                         intoNewScope();
@@ -161,6 +173,12 @@ int buildSymtabNode(TreeNode *t){
 			if (prmtQueueStart){
                                 insertAllPrmt(prmtQueueStart);
                                 prmtQueueEnd = prmtQueueStart = NULL;
+                        }
+			
+			if (funcFlag == 1){
+                                funcFlag = 0;
+                                innerFuncFlag = 1;
+                                returnFlag = 0;
                         }
                 }
 
@@ -180,6 +198,11 @@ int buildSymtabNode(TreeNode *t){
 
                 if (compFlag){
                         closeScope();
+			if (innerFuncFlag == 1 && returnFlag == 0){
+                                fprintf(listing, "ERROR in line %d : return statement not exist\n", t->lineno);
+                                Error = TRUE;
+                                return -1;
+                        }
                 }
         }
 
@@ -288,6 +311,17 @@ int checkNode(TreeNode *t){
 				t->type = Integer;
 			else
 				t->type = Void;
+			
+			break;
+		case InK:
+		case OutK:
+			if (t->child[0]->type != Integer){
+                                fprintf(listing, "ERROR in line %d : cannot use void expression for output\n", t->lineno);
+                                return -1;
+                        }
+
+			t->type = Void;
+			break;
 		default: break;
 		}
 		break;

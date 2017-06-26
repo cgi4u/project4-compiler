@@ -314,7 +314,7 @@ input		: INPUT LPAREN var RPAREN
 				$$ = newExpNode(InK);
 				$$->child[0] = $3;
 			}
-output          : OUTPUT LPAREN var RPAREN
+output          : OUTPUT LPAREN exp RPAREN
                         {
                                 $$ = newExpNode(OutK);
                                 $$->child[0] = $3;
