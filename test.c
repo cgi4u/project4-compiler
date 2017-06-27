@@ -2,21 +2,21 @@ int glob[7];
 
 void main(void){
 	int x;
-	int y;
-	int arr[9];
 
-	x = glob[5];	
+	x = 5;
+	glob[2] = x;
 	
-	if (x + y){
-		x = x + y;
+	if (glob[2] + x){
+		glob[3] = glob[2] + x;
 	}	
 	else
-		arr[1] = x;
+		glob[1] = x;
 
-	while (arr[1]){
-		arr[1] = arr[1] - 1;
+	while (x){
+		x = x - x;
 	}
 
-	output(arr[1]);
+	output(glob[3]);
+	output(x);
 }
 

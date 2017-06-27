@@ -285,7 +285,7 @@ void genExp(TreeNode *tree){
 		break;
 	case InK:
 		fprintf(code, "\tli\t$v0, 4\n");
-		fprintf(code, "\tla\t$a0, input\n");
+		fprintf(code, "\tla\t$a0, _input\n");
 		fprintf(code, "\tsyscall\n");
 		
 		fprintf(code, "\tli\t$v0, 5\n");
@@ -297,15 +297,19 @@ void genExp(TreeNode *tree){
 		break;
 	case OutK:
 		fprintf(code, "\tli\t$v0, 4\n");
-                fprintf(code, "\tla\t$a0, Aoutput\n");
+                fprintf(code, "\tla\t$a0, _output\n");
                 fprintf(code, "\tsyscall\n");
 
 		cGen(tree->child[0]);
 		ifAdrr(tree->child[0]);
 		
 		fprintf(code, "\tli\t$v0, 1\n");
-		fprintf(code, "\tla\t$a0, $t0\n");
+		fprintf(code, "\tmove\t$a0, $t0\n");
 		fprintf(code, "\tsyscall\n");
+
+		fprintf(code, "\tli\t$v0, 4\n");
+                fprintf(code, "\tla\t$a0, _newline\n");
+                fprintf(code, "\tsyscall\n");
 		break;
 	default: break;		
 	}
@@ -373,8 +377,9 @@ void presetMIPS(TreeNode * syntaxTree){
 		}
 		syntaxTree = syntaxTree->sibling;
 	}
-	fprintf(code, "input:\t.asciiz \"Input Integer:\"\n");
-	fprintf(code, "output:\t.asciiz \"Output:\"\n");
+	fprintf(code, "_input:\t.asciiz \"Input Integer:\"\n");
+	fprintf(code, "_output:\t.asciiz \"Output:\"\n");
+	fprintf(code, "_newline:\t.asciiz \"\\n\"\n");
 	fprintf(code, "\t.text\n");
 	fprintf(code, "\t.globl main\n");
 }
