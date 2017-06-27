@@ -38,7 +38,7 @@ static int nullProc(TreeNode *t){
 }
 */
 
-static void insertPrmtQueue(char *name, int lineno, PrmtKind pkind){
+static void insertPrmtQueue(char *name, int lineno, PrmtKind pkind, TreeNode *symbolNode){
 	if (prmtQueueEnd){
 		prmtQueueEnd->next = (BucketList)malloc(sizeof(struct BucketListRec));
 		prmtQueueEnd = prmtQueueEnd->next;	
@@ -54,6 +54,7 @@ static void insertPrmtQueue(char *name, int lineno, PrmtKind pkind){
         prmtQueueEnd->arrSize = 0;
         prmtQueueEnd->type = INT;
 	prmtQueueEnd->next = NULL;
+	prmtQueueEnd->symbolNode = symbolNode;
 
 	prmtQueueEnd->lines = (LineList)malloc(sizeof(struct LineListRec));
         prmtQueueEnd->lines->lineno = lineno;
@@ -122,7 +123,7 @@ static int insertNode(TreeNode *t){
                                         fprintf(listing, "\t\t\tfirst declared at line %d\n", searchedPar->lines->lineno);
                                         return -1;
                                 }
-                                insertPrmtQueue(t->attr.name, t->lineno, t->kind.prmt);
+                                insertPrmtQueue(t->attr.name, t->lineno, t->kind.prmt, t);
 			default: break;
                 }
 		break;
@@ -233,14 +234,12 @@ int checkNode(TreeNode *t){
 		switch (t->kind.stmt){
 		case SelK:  
 		case IterK: 
-			printf("1\n");
 			if (t->child[0]->type != Integer){
 				fprintf(listing, "ERROR in line %d : condition must be integer type\n", t->child[0]->lineno);               
                                 return -1;	
 			}
 			break;
 		case RetK: 
-			printf("2\n");
 			if (t->child[0]){
 				if (curFuncRetType != t->child[0]->type){
                                 	fprintf(listing, "ERROR in line %d : wrong return type\n", t->child[0]->lineno);
@@ -260,7 +259,6 @@ int checkNode(TreeNode *t){
 		switch (t->kind.exp){
 		case AssignK:
 		case OpK:
-			printf("3\n");
 			if ((t->child[0]->type != Integer) || (t->child[1]->type != Integer)){
 				fprintf(listing, "ERROR in line %d : invalid operand\n", t->lineno);                   
                                 return -1;
@@ -268,11 +266,9 @@ int checkNode(TreeNode *t){
 			t->type = Integer;
 			break;
 		case ConstK:
-			printf("4\n");
 			t->type = Integer;
                         break;
 		case IdK:
-			printf("5\n");
 			found = st_lookup(t->attr.name, 0);
 			if (found->subKind == 2)
 				t->type = Array;
@@ -280,7 +276,6 @@ int checkNode(TreeNode *t){
 				t->type = Integer;
                         break;
 		case ArrIdK:	
-			printf("6\n");
 			found = st_lookup(t->attr.name, 0);
 			if (found->subKind != 2){
 				fprintf(listing, "ERROR in line %d : array name is required in array expression\n", t->lineno);
@@ -293,7 +288,6 @@ int checkNode(TreeNode *t){
 			t->type = Integer;
 			break;
 		case CallK:
-			printf("7\n");
 			found = st_lookup(t->attr.name, 0);
 			if ((found->kind != DclK) || (found->subKind != FuncK)){
                                 fprintf(listing, "ERROR in line %d : function name is required in function call\n", t->lineno);
@@ -327,7 +321,6 @@ int checkNode(TreeNode *t){
 			break;
 		case InK:
 		case OutK:
-			printf("8\n");
 			if (t->child[0]->type != Integer){
                                 fprintf(listing, "ERROR in line %d : cannot use void expression for output\n", t->lineno);
                                 return -1;
@@ -342,14 +335,12 @@ int checkNode(TreeNode *t){
 		switch (t->kind.dcl){
 		case VarK: 
 		case ArrK:
-			printf("9\n");
 			if (t->child[0]->attr.type == VOID){
 				fprintf(listing, "ERROR in line %d : variable cannot have void type\n", t->lineno);	
 				return -1;
 			}
 			break;
 		case FuncK:
-			printf("10\n");
 			if (strcmp(t->attr.name, "main") == 0){
 				if (t->child[0]->attr.type != VOID){
 					fprintf(listing, "ERROR in line %d : main fuction should return void\n", t->lineno); 
@@ -366,7 +357,6 @@ int checkNode(TreeNode *t){
 	case PrmtK:
 		switch (t->kind.prmt){
 		case IntK:
-			printf("11\n");
 			if (t->child[0]->attr.type == VOID){
 				fprintf(listing, "ERROR in line %d : parameter cannot have void type\n", t->lineno);
 				return -1;
@@ -374,7 +364,6 @@ int checkNode(TreeNode *t){
 			t->type = Integer;
 			break;
 		case IntArrK:
-			printf("12\n");
 			if (t->child[0]->attr.type == VOID){                                
 				fprintf(listing, "ERROR in line %d : parameter cannot have void type\n", t->lineno);
                                 return -1;
@@ -391,9 +380,6 @@ int checkNode(TreeNode *t){
 
 int checkTree(TreeNode *t){
 	int compFlag = 0;
-
-	//static int debug = 0;
-	//printf("%d\n", debug++);	
 
         if (t != NULL){
 		if ((t->nodekind == StmtK) && (t->kind.stmt == CompK)){

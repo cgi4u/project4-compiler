@@ -2,15 +2,18 @@
 #include "util.h"
 #include "scan.h"
 #include "analyze.h"
+#include "cgen.h"
 
 /*allocate global variables*/
 int lineno = 0;
 FILE *source;
 FILE *listing;
+FILE *code;
 int Error = FALSE;
 
 int main(int argc, char *argv[]){
 	char pgm[20];	//source code file name
+	char *temp;	
 	TreeNode * syntaxTree;	
 
 	if (argc != 2){
@@ -50,7 +53,13 @@ int main(int argc, char *argv[]){
 	if (Error) return -1;
 	fprintf(listing, "\nType Checking Finished\n");
 
+	temp = strchr(pgm, '.');
+	strcpy(temp, ".asm");
+	code = fopen(pgm, "w");
+	codeGen(syntaxTree);
+
 	fclose(source);
+	fclose(code);
 	return 0;
 }
 

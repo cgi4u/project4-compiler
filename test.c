@@ -1,31 +1,18 @@
-void func(int c, int b){
-	int a;
-	int d;
-}
-
 int glob[7];
 
 void main(void){
-	int a;
-	int b;
-	int c;
-	int arr[10];
-	int d;
-	a = 1;
-	b = 2;
-	c = 3;
-	d = 4;
-	a = a + b + ((c + d) + 5 + 6) + 7 + 8 + 9; /* 100 */
-	output(a);
-	b = c * d - b; /* 10 */
-	output(b);
-	c = d / (c - 1); /* 2 */
-	output(c);
-	d = a / b - c * c; /*6 */
-	output(d);
-	input(a);
-	func(arr[5], c);
-	output(a);
+	int x;
+	int y;
+	int arr[9];
+	
+	if (x + y){
+		x = x + y;
+	}	
+	else
+		arr[1] = x;
+
+	while (arr[1]){
+		arr[1] = arr[1] - 1;
+	}
 }
 
-int a;

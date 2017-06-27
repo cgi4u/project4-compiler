@@ -87,6 +87,7 @@ typedef struct treeNode{
 	
 	int location;
 	struct treeNode *dclNode;
+
 	ExpType type;
 } TreeNode;
 

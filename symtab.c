@@ -144,6 +144,7 @@ void st_insert(char * name, int lineno, NodeKind kind, int subKind, int arrSize,
                                 else if (subKind == ArrK)
                                         temp->symbol_location = 4 * arrSize;
 			}
+			symbolNode->location = temp->symbol_location;
 		}
 		temp->symbolNode = symbolNode;
 
