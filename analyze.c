@@ -138,7 +138,7 @@ static int insertNode(TreeNode *t){
                                 }
                                 st_insert(NULL, t->lineno, 0, 0, 0, 0, found, NULL);
 				t->location = found->symbol_location;
-				if (t->location < 0)
+				if (t->location < 0 || found->symbolNode->nodekind == PrmtK)
 					t->dclNode = found->symbolNode;
 				else
 					t->dclNode = NULL;
@@ -241,7 +241,7 @@ int checkNode(TreeNode *t){
 			break;
 		case RetK: 
 			if (t->child[0]){
-				if (curFuncRetType != t->child[0]->type){
+				if (t->child[0]->type != Integer){
                                 	fprintf(listing, "ERROR in line %d : wrong return type\n", t->child[0]->lineno);
                                 	return -1;
                         	}
@@ -320,6 +320,8 @@ int checkNode(TreeNode *t){
 			
 			break;
 		case InK:
+			t->type = Integer;
+			break;
 		case OutK:
 			if (t->child[0]->type != Integer){
                                 fprintf(listing, "ERROR in line %d : cannot use void expression for output\n", t->lineno);

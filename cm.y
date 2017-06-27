@@ -309,10 +309,9 @@ arg_list	: arg_list COLON exp
                           else $$ = $3;
                         }
 		| exp { $$ = $1; }
-input		: INPUT LPAREN var RPAREN
+input		: INPUT LPAREN RPAREN
 			{
 				$$ = newExpNode(InK);
-				$$->child[0] = $3;
 			}
 output          : OUTPUT LPAREN exp RPAREN
                         {

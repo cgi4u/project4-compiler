@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "symtab.h"
 #include "cgen.h"
-
+/*
 typedef struct intCont{
 	int val;
 	
@@ -25,10 +25,13 @@ int popStack(){
 	free(temp);
 	return tempi;
 }
-
+*/
 int fpspInt;
 
 static void cGen(TreeNode *tree);
+
+int voidFuncFlag = 0;
+int mainFlag = 0;
 
 /* Procedure genDecl generates code at a declaration node */
 static void genDcl( TreeNode * tree)
@@ -36,11 +39,20 @@ static void genDcl( TreeNode * tree)
   	switch (tree->kind.dcl) {
  	case FuncK:
 		fprintf(code, "%s:\n", tree->attr.name);
-		if (strcmp(tree->attr.name, "main"))
+		if (tree->child[0]->attr.type == VOID)
+                        voidFuncFlag = 1;
+		if (strcmp(tree->attr.name, "main")){
 			fpspInt = -8;
+			fprintf(code, "\tsw\t$ra, -4($sp)\n");
+                	fprintf(code, "\tsw\t$fp, -8($sp)\n");
+        	        fprintf(code, "\tmove\t$fp, $sp\n");
+	                fprintf(code, "\taddiu\t$sp, $sp, -8\n");
+		}
 		else{
 			fpspInt = 0;
 			fprintf(code, "\tmove\t$fp, $sp\n");
+			voidFuncFlag = 2;
+			mainFlag = 1;
 		}
 		cGen(tree->child[2]);
 		break;
@@ -81,8 +93,13 @@ void genStmt( TreeNode * tree ){
 	TreeNode *temp;
 	int beforeInt;
 
+	static int innerVoidFuncFlag = 0;
+	
 	switch (tree->kind.stmt) {
 	case CompK:
+		innerVoidFuncFlag = voidFuncFlag;
+		voidFuncFlag = 0;
+		
 		temp = tree->child[0];
 		beforeInt = fpspInt;
 		while (temp){
@@ -96,6 +113,17 @@ void genStmt( TreeNode * tree ){
 		if (fpspInt != beforeInt)
 			fprintf(code, "\taddiu\t$sp, $sp, %d\n", fpspInt - beforeInt);
 		cGen(tree->child[1]);
+
+		if (innerVoidFuncFlag == 1){
+			fprintf(code, "\tmove\t$sp, $fp\n");
+			fprintf(code, "\tlw\t$ra, -4($fp)\n");
+                        fprintf(code, "\tlw\t$fp, -8($fp)\n");
+			fprintf(code, "\tjr\t$ra\n");
+		}
+		else if (innerVoidFuncFlag == 2){
+			fprintf(code, "\tli\t$v0, 10\n");
+			fprintf(code, "\tsyscall\n");
+		}
 		break;
 	case SelK:
 		cGen(tree->child[0]);
@@ -106,15 +134,21 @@ void genStmt( TreeNode * tree ){
 		*/
 		ifAdrr(tree->child[0]);
 		curSelLabelNum = selLabelNum++;
-		fprintf(code, "\tbeqz\t$t0, SL%d\n", curSelLabelNum);
+		fprintf(code, "\tbeqz\t$t0, _SL%d\n", curSelLabelNum);
 		cGen(tree->child[1]);
-		fprintf(code, "SL%d:\n", curSelLabelNum);
-		if (tree->child[2])
+		if (tree->child[2]){
+			fprintf(code, "\tj\t_SL%d_ELSE\n", curSelLabelNum);
+			fprintf(code, "_SL%d:\n", curSelLabelNum);
 			cGen(tree->child[2]);
+			fprintf(code, "_SL%d_ELSE:\n", curSelLabelNum);
+		}
+		else{
+			fprintf(code, "_SL%d:\n", curSelLabelNum);
+		}
 		break;
 	case IterK:
 		curIterLabelNum = iterLabelNum++;
-		fprintf(code, "IL%d:\n", curIterLabelNum);
+		fprintf(code, "_IL%d:\n", curIterLabelNum);
 		cGen(tree->child[0]);
 		/*
 		fprintf(code, "\tlw\t$t0, 0($sp)\n");
@@ -122,10 +156,33 @@ void genStmt( TreeNode * tree ){
 		fpspInt += 4;
 		*/
 		ifAdrr(tree->child[0]);
-		fprintf(code, "\tbeqz\t$t0, IL%d_done\n", curIterLabelNum);
+		fprintf(code, "\tbeqz\t$t0, _IL%d_done\n", curIterLabelNum);
 		cGen(tree->child[1]);
-		fprintf(code, "\tj\tIL%d\n", curIterLabelNum);
-		fprintf(code, "IL%d_done:\n", curIterLabelNum);
+		fprintf(code, "\tj\t_IL%d\n", curIterLabelNum);
+		fprintf(code, "_IL%d_done:\n", curIterLabelNum);
+		break;
+	case RetK:
+		if (tree->child[0]){
+			cGen(tree->child[0]);
+			ifAdrr(tree->child[0]);
+			fprintf(code, "\tmove\t$sp, $fp\n");
+                        fprintf(code, "\tlw\t$ra, -4($fp)\n");
+                        fprintf(code, "\tlw\t$fp, -8($fp)\n");
+                        fprintf(code, "\tjr\t$ra\n");
+		}
+		else{
+			if (mainFlag){
+				fprintf(code, "\tli\t$v0, 10\n");
+                        	fprintf(code, "\tsyscall\n");
+			}
+			else{
+				fprintf(code, "\tmove\t$sp, $fp\n");
+                        	fprintf(code, "\tlw\t$ra, -4($fp)\n");
+                        	fprintf(code, "\tlw\t$fp, -8($fp)\n");
+                        	fprintf(code, "\tjr\t$ra\n");
+			}
+		}
+		break;
 	default: break;
 	}
 }
@@ -133,6 +190,9 @@ void genStmt( TreeNode * tree ){
 void genExp(TreeNode *tree){
 	static int compLabelNum = 0;
 	int curCompLabelNum = 0;
+	
+	TreeNode *arg_temp_link;
+	int arg_temp;
 
 	switch (tree->kind.exp){
 	case ConstK:
@@ -163,8 +223,10 @@ void genExp(TreeNode *tree){
 		fprintf(code, "\tmove\t$t1, $t0\n");
 		fprintf(code, "\tli\t$t2, 4\n");
 		fprintf(code, "\tmul\t$t1, $t1, $t2\n");	
-		if (tree->dclNode == 0)
+		if (tree->dclNode == NULL)
                         fprintf(code, "\tla\t$t0, %s\n", tree->attr.arrProp.name);
+		else if (tree->dclNode->nodekind == PrmtK)
+			fprintf(code, "\tlw\t$t0, %d($fp)\n", tree->dclNode->location);
 		else
 			fprintf(code, "\tla\t$t0, %d($fp)\n", tree->dclNode->location);
 		fprintf(code, "\tadd\t$t0, $t0, $t1\n");
@@ -197,44 +259,44 @@ void genExp(TreeNode *tree){
 		case EQ:
 			curCompLabelNum = compLabelNum++;
 			fprintf(code, "\tli\t$t0, 1\n");
-			fprintf(code, "\tbeq\t$t1, $t2, CL%d\n", curCompLabelNum);
+			fprintf(code, "\tbeq\t$t1, $t2, _CL%d\n", curCompLabelNum);
 			fprintf(code, "\tli\t$t0, 0\n");
-			fprintf(code, "CL%d:\n", curCompLabelNum);
+			fprintf(code, "_CL%d:\n", curCompLabelNum);
 			break;
 		case NE:
 			curCompLabelNum = compLabelNum++;
                         fprintf(code, "\tli\t$t0, 1\n");
-                        fprintf(code, "\tbne\t$t1, $t2, CL%d\n", curCompLabelNum);
+                        fprintf(code, "\tbne\t$t1, $t2, _CL%d\n", curCompLabelNum);
                         fprintf(code, "\tli\t$t0, 0\n");
-                        fprintf(code, "CL%d:\n", curCompLabelNum);
+                        fprintf(code, "_CL%d:\n", curCompLabelNum);
                         break;
 		case LE:
 			curCompLabelNum = compLabelNum++;
                         fprintf(code, "\tli\t$t0, 1\n");
-                        fprintf(code, "\tble\t$t1, $t2, CL%d\n", curCompLabelNum);
+                        fprintf(code, "\tble\t$t1, $t2, _CL%d\n", curCompLabelNum);
                         fprintf(code, "\tli\t$t0, 0\n");
-                        fprintf(code, "CL%d:\n", curCompLabelNum);
+                        fprintf(code, "_CL%d:\n", curCompLabelNum);
                         break;
 		case LT:
 			curCompLabelNum = compLabelNum++;
                         fprintf(code, "\tli\t$t0, 1\n");
-                        fprintf(code, "\tblt\t$t1, $t2, CL%d\n", curCompLabelNum);
+                        fprintf(code, "\tblt\t$t1, $t2, _CL%d\n", curCompLabelNum);
                         fprintf(code, "\tli\t$t0, 0\n");
-                        fprintf(code, "CL%d:\n", curCompLabelNum);
+                        fprintf(code, "_CL%d:\n", curCompLabelNum);
                         break;
 		case GE:
 			curCompLabelNum = compLabelNum++;
                         fprintf(code, "\tli\t$t0, 1\n");
-                        fprintf(code, "\tbge\t$t1, $t2, CL%d\n", curCompLabelNum);
+                        fprintf(code, "\tbge\t$t1, $t2, _CL%d\n", curCompLabelNum);
                         fprintf(code, "\tli\t$t0, 0\n");
-                        fprintf(code, "CL%d:\n", curCompLabelNum);
+                        fprintf(code, "_CL%d:\n", curCompLabelNum);
                         break;
 		case GT:
 			curCompLabelNum = compLabelNum++;
                         fprintf(code, "\tli\t$t0, 1\n");
-                        fprintf(code, "\tbgt\t$t1, $t2, CL%d\n", curCompLabelNum);
+                        fprintf(code, "\tbgt\t$t1, $t2, _CL%d\n", curCompLabelNum);
                         fprintf(code, "\tli\t$t0, 0\n");
-                        fprintf(code, "CL%d:\n", curCompLabelNum);
+                        fprintf(code, "_CL%d:\n", curCompLabelNum);
                         break;
 		case PLUS:
 			fprintf(code, "\tadd\t$t0, $t1, $t2\n");
@@ -290,10 +352,7 @@ void genExp(TreeNode *tree){
 		
 		fprintf(code, "\tli\t$v0, 5\n");
                 fprintf(code, "\tsyscall\n");
-		fprintf(code, "\tmove\t$t1, $v0\n");
-
-		cGen(tree->child[0]);
-		fprintf(code, "\tsw\t$t1, 0($t0)\n");
+		fprintf(code, "\tmove\t$t0, $v0\n");
 		break;
 	case OutK:
 		fprintf(code, "\tli\t$v0, 4\n");
@@ -310,6 +369,41 @@ void genExp(TreeNode *tree){
 		fprintf(code, "\tli\t$v0, 4\n");
                 fprintf(code, "\tla\t$a0, _newline\n");
                 fprintf(code, "\tsyscall\n");
+		break;
+	case CallK:
+		arg_temp_link = tree->child[0];
+	        arg_temp = 0;
+
+		while (arg_temp_link){
+			arg_temp++;
+			arg_temp_link = arg_temp_link->sibling;
+		}
+		if (arg_temp){
+			fprintf(code, "\taddiu\t$sp, $sp, %d\n", -4 * arg_temp);
+		}
+
+		arg_temp_link = tree->child[0];
+		arg_temp = 0;
+
+		while (arg_temp_link){
+			cGen(arg_temp_link);
+			if (arg_temp_link->type != Array)
+				ifAdrr(arg_temp_link);
+			else
+				fprintf(code, "\tadd\t$t0, $fp, t0\n");
+
+                  	fprintf(code, "\tsw\t$t0, %d($sp)\n", arg_temp);
+			arg_temp += 4;
+                        arg_temp_link = arg_temp_link->sibling;
+                }
+
+		//fprintf(code, "\tsw\t$ra, -4($sp)\n");
+		//fprintf(code, "\tsw\t$fp, -8($sp)\n");
+		//fprintf(code, "\tmove\t$fp, $sp\n");
+		//fprintf(code, "\taddiu\t$sp, $sp, -8\n");
+		fprintf(code, "\tjal\t%s\n", tree->attr.name);
+		fprintf(code, "\taddiu\t$sp, $sp, %d\n", arg_temp);
+		
 		break;
 	default: break;		
 	}
@@ -337,8 +431,6 @@ static void cGen(TreeNode *tree)
         		genDcl(tree);
        			break;
       		case PrmtK:
-        		//genPrmt(tree);
-        		break;
       		default:
         		break;
     		}
@@ -377,8 +469,8 @@ void presetMIPS(TreeNode * syntaxTree){
 		}
 		syntaxTree = syntaxTree->sibling;
 	}
-	fprintf(code, "_input:\t.asciiz \"Input Integer:\"\n");
-	fprintf(code, "_output:\t.asciiz \"Output:\"\n");
+	fprintf(code, "_input:\t.asciiz \"Input : \"\n");
+	fprintf(code, "_output:\t.asciiz \"Output : \"\n");
 	fprintf(code, "_newline:\t.asciiz \"\\n\"\n");
 	fprintf(code, "\t.text\n");
 	fprintf(code, "\t.globl main\n");
@@ -388,7 +480,4 @@ void codeGen(TreeNode * syntaxTree)
 {
 	presetMIPS(syntaxTree);	  
 	cGen(syntaxTree);
-  
-	fprintf(code,"\tli $v0, 10\n");
-	fprintf(code,"\tsyscall\n");
 }

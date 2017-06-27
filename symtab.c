@@ -211,10 +211,7 @@ void printSymTab(FILE *listing){
 			while ( l ){
 				fprintf(listing, "%-14s", l->name);
 				fprintf(listing, "%-7d", cur->scope);
-				if (l->kind == PrmtK || (l->kind == DclK && l->subKind != FuncK))
-					fprintf(listing, "%-5d", l->symbol_location);
-				else
-					fprintf(listing, "%-5d", l->loc);
+				fprintf(listing, "%-5d", l->loc);
 				if (l->kind == PrmtK){
 					fprintf(listing, "%-7s", "Par");
 				}
